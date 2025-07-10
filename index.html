@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日报 - 每日精选AI资讯</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Segoe UI, sans-serif;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-size: 24px;
+            color: #FF6B35;
+        }
+        
+        /* 从之前的设计复用样式 */
+        .date-selector {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 107, 53, 0.3);
+            padding: 1rem 0;
+        }
+        
+        .date-tabs {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0 1rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .date-tab {
+            flex-shrink: 0;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .date-tab:hover {
+            border-color: rgba(255, 107, 53, 0.5);
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .date-tab.active {
+            background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
+            border-color: #FF6B35;
+            color: #000000;
+            font-weight: bold;
+        }
+        
+        .bento-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .collapsible {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .collapsible:hover {
+            color: #FF6B35;
+        }
+        
+        .collapsible-icon {
+            transition: transform 0.3s ease;
+            color: #FF6B35;
+        }
+        
+        .collapsible.active .collapsible-icon {
+            transform: rotate(180deg);
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .collapsible-content.active {
+            max-height: 2000px;
+            transition: max-height 0.5s ease-in;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span class="ml-3">加载中...</span>
+        </div>
+    </div>
+
+    <script>
+        // 应用状态
+        let appState = {
+            reports: [],
+            currentDate: null,
+            currentData: null
+        };
+
+        // 初始化应用
+        async function initApp() {
+            try {
+                // 对于本地测试，直接使用内置数据
+                if (window.location.protocol === 'file:') {
+                    // 本地测试模式
+                    appState.reports = [
+                        {
+                            date: "2025-07-09",
+                            dateRange: "2025-07-09 至 2025-07-10",
+                            dayOfWeek: "周三-周四",
+                            title: "AI编程工具大洗牌",
+                            summary: "AI编程工具大洗牌，山海经内容爆火，用户成AI游牧民族"
+                        },
+                        {
+                            date: "2025-07-08",
+                            dayOfWeek: "周二",
+                            title: "微信支付接入AI Agent打通商业闭环",
+                            summary: "微信支付接入AI Agent打通商业闭环，独立开发者项目初见成效，Cursor用户大规模迁移"
+                        }
+                    ];
+                    
+                    // 渲染导航
+                    renderApp();
+                    
+                    // 加载最新日报
+                    if (appState.reports.length > 0) {
+                        await loadReport(appState.reports[0].date);
+                    }
+                } else {
+                    // 线上模式，从JSON加载
+                    const response = await fetch('./data/index.json');
+                    if (!response.ok) throw new Error('无法加载日报索引');
+                    
+                    const index = await response.json();
+                    appState.reports = index.reports.sort((a, b) => 
+                        new Date(b.date) - new Date(a.date)
+                    );
+                    
+                    // 渲染导航
+                    renderApp();
+                    
+                    // 加载最新日报
+                    if (appState.reports.length > 0) {
+                        await loadReport(appState.reports[0].date);
+                    }
+                }
+            } catch (error) {
+                console.error('初始化失败:', error);
+                document.getElementById('app').innerHTML = `
+                    <div class="text-center p-10">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-4 text-orange-500"></i>
+                        <p>加载失败，请刷新重试</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 渲染应用框架
+        function renderApp() {
+            document.getElementById('app').innerHTML = `
+                <div class="date-selector">
+                    <div class="date-tabs" id="dateTabs"></div>
+                </div>
+                <div class="content-container" id="contentContainer"></div>
+            `;
+            
+            const dateTabs = document.getElementById('dateTabs');
+            appState.reports.forEach(report => {
+                const tab = document.createElement('div');
+                tab.className = 'date-tab';
+                tab.setAttribute('data-date', report.date);
+                tab.innerHTML = `
+                    <div class="date-tab-date">${formatDate(report.date)}</div>
+                    <div class="date-tab-day">${report.dayOfWeek}</div>
+                `;
+                tab.addEventListener('click', () => loadReport(report.date));
+                dateTabs.appendChild(tab);
+            });
+        }
+
+        // 加载日报
+        async function loadReport(date) {
+            try {
+                // 更新标签状态
+                document.querySelectorAll('.date-tab').forEach(tab => {
+                    tab.classList.toggle('active', tab.getAttribute('data-date') === date);
+                });
+                
+                // 显示加载状态
+                document.getElementById('contentContainer').innerHTML = `
+                    <div class="text-center p-10">
+                        <i class="fas fa-spinner fa-spin text-2xl text-orange-500"></i>
+                    </div>
+                `;
+                
+                // 加载日报数据
+                const response = await fetch(`./data/${date}.json`);
+                if (!response.ok) throw new Error('无法加载日报数据');
+                
+                const data = await response.json();
+                appState.currentDate = date;
+                appState.currentData = data;
+                
+                // 渲染内容
+                renderContent(data);
+            } catch (error) {
+                console.error('加载日报失败:', error);
+                // 如果JSON文件不存在，尝试直接渲染HTML
+                renderStaticContent(date);
+            }
+        }
+
+        // 渲染静态内容（兼容模式）
+        function renderStaticContent(date) {
+            const container = document.getElementById('contentContainer');
+            const report = appState.reports.find(r => r.date === date);
+            
+            if (!report) {
+                container.innerHTML = '<div class="text-center p-10">日报内容暂未准备好</div>';
+                return;
+            }
+            
+            // 对于本地测试，直接显示跳转链接
+            container.innerHTML = `
+                <div class="text-center p-10">
+                    <p class="mb-4">点击下方链接查看完整内容：</p>
+                    <a href="multi-day-complete-enhanced.html#content-${date}" 
+                       class="inline-block px-6 py-3 bg-orange-500 text-black rounded-lg hover:bg-orange-600 transition">
+                        查看 ${report.dayOfWeek} 日报
+                    </a>
+                </div>
+            `;
+        }
+
+        // 渲染内容
+        function renderContent(data) {
+            const container = document.getElementById('contentContainer');
+            
+            // 基础模板
+            container.innerHTML = `
+                <div class="daily-content active">
+                    <div class="max-w-7xl mx-auto p-4">
+                        <!-- 标题区域 -->
+                        <div class="bento-item mb-6 text-center">
+                            <h1 class="hero-title">AI日报</h1>
+                            <div class="text-2xl font-bold mt-4">
+                                ${data.dateRange || data.date}
+                                <span class="text-sm text-gray-500 ml-2">${data.dayOfWeek}</span>
+                            </div>
+                            <p class="text-gray-400 mt-4 max-w-2xl mx-auto">
+                                ${data.summary}
+                            </p>
+                        </div>
+                        
+                        <!-- 内容区域 -->
+                        <div id="dynamicContent"></div>
+                    </div>
+                </div>
+            `;
+            
+            // 如果有原始内容，尝试渲染
+            if (data.rawContent) {
+                renderMarkdownContent(data.rawContent);
+            } else {
+                // 渲染结构化内容
+                renderStructuredContent(data);
+            }
+            
+            // 绑定折叠功能
+            bindCollapsibles();
+        }
+
+        // 渲染Markdown内容
+        function renderMarkdownContent(content) {
+            const container = document.getElementById('dynamicContent');
+            
+            // 简单的Markdown到HTML转换
+            let html = content
+                .replace(/^### (.+)$/gm, '<h3 class="text-xl font-bold mb-3 text-orange-400">$1</h3>')
+                .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold mb-4 mt-8">$1</h2>')
+                .replace(/^# (.+)$/gm, '<h1 class="text-3xl font-bold mb-6">$1</h1>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong class="text-orange-400">$1</strong>')
+                .replace(/^- (.+)$/gm, '<li class="ml-4 mb-2">• $1</li>')
+                .replace(/\n\n/g, '</p><p class="mb-4 text-gray-300">')
+                .replace(/^/g, '<p class="mb-4 text-gray-300">');
+            
+            container.innerHTML = `<div class="prose prose-invert max-w-none">${html}</div>`;
+        }
+
+        // 渲染结构化内容
+        function renderStructuredContent(data) {
+            const container = document.getElementById('dynamicContent');
+            
+            let html = '<div class="grid gap-6">';
+            
+            // 渲染各个部分
+            if (data.sections) {
+                Object.entries(data.sections).forEach(([title, content]) => {
+                    html += `
+                        <div class="bento-item">
+                            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                                <i class="fas fa-chevron-right text-orange-500"></i>
+                                ${title}
+                            </h2>
+                            <div class="collapsible">
+                                <span>查看详细内容</span>
+                                <i class="fas fa-chevron-down collapsible-icon"></i>
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="mt-4 text-gray-300">
+                                    ${formatContent(content)}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // 格式化内容
+        function formatContent(content) {
+            return content
+                .replace(/\*\*(.+?)\*\*/g, '<strong class="text-orange-400">$1</strong>')
+                .replace(/\n- /g, '<br/>• ')
+                .replace(/\n\n/g, '</p><p class="mb-4">')
+                .replace(/^/, '<p class="mb-4">') + '</p>';
+        }
+
+        // 绑定折叠功能
+        function bindCollapsibles() {
+            document.querySelectorAll('.collapsible').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    content.classList.toggle('active');
+                });
+            });
+        }
+
+        // 工具函数
+        function formatDate(dateStr) {
+            const [year, month, day] = dateStr.split('-');
+            return `${parseInt(month)}-${parseInt(day)}`;
+        }
+
+        // 启动应用
+        initApp();
+    </script>
+</body>
+</html>

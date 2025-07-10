@@ -1,0 +1,23 @@
+{
+  "reports": [
+    {
+      "date": "2025-07-07",
+      "dayOfWeek": "周一",
+      "title": "AI日报",
+      "summary": "在这里添加07-07日报的总结"
+    },
+    {
+      "date": "2025-07-08",
+      "dayOfWeek": "周二",
+      "title": "AI日报",
+      "summary": "微信支付接入AI Agent打通商业闭环，独立开发者项目初见成效，Cursor用户大规模迁移"
+    },
+    {
+      "date": "2025-07-09",
+      "dateRange": "2025-07-09 至 2025-07-10",
+      "dayOfWeek": "周三-周四",
+      "title": "AI日报",
+      "summary": "AI编程工具大洗牌，山海经内容爆火，用户成AI游牧民族"
+    }
+  ]
+}
