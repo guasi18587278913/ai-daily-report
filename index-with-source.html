@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日报 - 多日浏览</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Segoe UI, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* 日期选择器样式 */
+        .date-selector {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 107, 53, 0.3);
+            padding: 1rem 0;
+        }
+        
+        .date-tabs {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0 1rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .date-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .date-tab {
+            flex-shrink: 0;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .date-tab:hover {
+            border-color: rgba(255, 107, 53, 0.5);
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .date-tab.active {
+            background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
+            border-color: #FF6B35;
+            color: #000000;
+            font-weight: bold;
+        }
+        
+        /* Bento Grid 样式 */
+        .bento-grid {
+            display: grid;
+            gap: 1rem;
+            padding: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .bento-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bento-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 107, 53, 0) 50%);
+            pointer-events: none;
+        }
+        
+        .bento-item:hover {
+            border-color: rgba(255, 107, 53, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(255, 107, 53, 0.2);
+        }
+        
+        /* 来源信息提示框样式 */
+        .has-source {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .has-source:hover {
+            color: #FF6B35;
+        }
+        
+        /* 来源标记样式 */
+        .source-indicator {
+            display: inline-block;
+            font-size: 0.75rem;
+            color: rgba(255, 107, 53, 0.6);
+            margin-left: 0.35rem;
+            transition: all 0.3s ease;
+            vertical-align: baseline;
+            opacity: 0.8;
+        }
+        
+        .has-source:hover .source-indicator {
+            color: #FF6B35;
+            transform: scale(1.2);
+        }
+        
+        /* 来源提示框 */
+        .source-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 20, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 107, 53, 0.6);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+            z-index: 1000;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+        
+        .source-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: rgba(255, 107, 53, 0.6);
+        }
+        
+        .has-source:hover .source-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+        
+        .source-group {
+            color: #FF6B35;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .source-author {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* 标题样式 */
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            line-height: 0.9;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+        
+        .highlight-number {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #FF6B35;
+            line-height: 0.8;
+            margin-bottom: 1rem;
+        }
+        
+        /* 内容样式优化 */
+        .content-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .content-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .content-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #FF6B35;
+            font-weight: bold;
+        }
+        
+        /* 引用块样式 */
+        .quote-block {
+            border-left: 3px solid #FF6B35;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .source-tooltip {
+                font-size: 0.75rem;
+                padding: 0.5rem 0.75rem;
+                white-space: normal;
+                max-width: 200px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .bento-item.full-width {
+                grid-column: span 2;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .bento-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .bento-item.full-width {
+                grid-column: span 3;
+            }
+            
+            .bento-item.half-width {
+                grid-column: span 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 日期选择器 -->
+    <div class="date-selector">
+        <div class="date-tabs">
+            <div class="date-tab">
+                <div class="date-tab-date">07-08</div>
+                <div class="date-tab-day">周二</div>
+            </div>
+            <div class="date-tab active">
+                <div class="date-tab-date">07-09</div>
+                <div class="date-tab-day">周三-周四</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 内容容器 -->
+    <div class="content-container">
+        <!-- 大标题 -->
+        <div class="bento-grid">
+            <div class="bento-item full-width" style="text-align: center; padding: 3rem 1.5rem;">
+                <div class="hero-title">AI日报</div>
+                <div style="font-size: 1.5rem; margin-bottom: 1rem;">2025-07-09 至 2025-07-10 <span style="opacity: 0.6;">周三-周四</span></div>
+                <div style="color: rgba(255, 255, 255, 0.8); font-size: 1.1rem;">AI编程工具大洗牌，山海经内容爆火，用户成AI游牧民族</div>
+            </div>
+            
+            <!-- 三大要点 -->
+            <div class="bento-item">
+                <div class="highlight-number">01</div>
+                <div class="section-subtitle">工具大洗牌</div>
+                <div class="highlight-text">Cursor因性能下降失宠，Augment崛起</div>
+            </div>
+            
+            <div class="bento-item">
+                <div class="highlight-number">02</div>
+                <div class="section-subtitle">内容风口</div>
+                <div class="highlight-text">经典IP + 跨界创新成流量密码</div>
+            </div>
+            
+            <div class="bento-item">
+                <div class="highlight-number">03</div>
+                <div class="section-subtitle">用户趋势</div>
+                <div class="highlight-text">垂直场景"小而美"工具受青睐</div>
+            </div>
+            
+            <!-- 今日要点 -->
+            <div class="bento-item full-width">
+                <h2 class="section-title"><i class="fas fa-fire" style="color: #FF6B35;"></i> 今日要点</h2>
+                <ul class="content-list">
+                    <li>
+                        <span class="has-source">
+                            <strong>AI编程IDE之战</strong>：Cursor近期更新后"变笨变慢"，Augment因其修改过程透明、上下文处理精准成为新宠
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AIGC 周刊会员群 02
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>山海经内容淘金热</strong>：YouTube创作者将山海经与ASMR、K-POP等融合，诞生千万乃至上亿播放的爆款
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> 【深海圈】海外AI产品 -交流1群
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 热门话题 -->
+            <div class="bento-item half-width">
+                <h2 class="section-title"><i class="fas fa-comments" style="color: #FF6B35;"></i> 热门话题</h2>
+                <div class="quote-block">
+                    <span class="has-source">
+                        "今天试用了augment，感觉比近期拉胯的cursor好多了，上下文到位，也不会瞎改，测试比较完善。"
+                        <span class="source-indicator">[来源]</span>
+                        <span class="source-tooltip">
+                            <div class="source-group">
+                                <i class="fas fa-users"></i> AIGC 周刊会员群 02
+                            </div>
+                            <div class="source-author">
+                                <i class="fas fa-user"></i> 归藏
+                            </div>
+                        </span>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- 工具情报 -->
+            <div class="bento-item">
+                <h2 class="section-title"><i class="fas fa-tools" style="color: #FF6B35;"></i> 工具情报</h2>
+                <div class="section-subtitle">新发现</div>
+                <ul class="content-list">
+                    <li>
+                        <span class="has-source">
+                            <strong>ccundo</strong>：GitHub命令行工具，解决Claude Code无法撤销/重做的痛点
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AI传术师编辑部
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>Pokee.ai</strong>：工作流智能体，能通过单一提示词自动分发到多个平台
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> 【深海圈】海外AI产品 -交流1群
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> 刘小排
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 添加交互效果
+        document.querySelectorAll('.date-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.date-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

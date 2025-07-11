@@ -3,6 +3,29 @@
 const fs = require('fs');
 const path = require('path');
 
+// 解析带来源信息的内容
+function parseContentWithSource(content) {
+    // 匹配格式: 内容 | 来源：[群组名] 或 内容 | 来源：[群组名] - [发言人]
+    const sourcePattern = /^(.+?)\s*\|\s*来源：\[([^\]]+)\](?:\s*-\s*\[([^\]]+)\])?$/;
+    const match = content.trim().match(sourcePattern);
+    
+    if (match) {
+        return {
+            text: match[1].trim(),
+            source: {
+                group: match[2],
+                author: match[3] || null
+            }
+        };
+    }
+    
+    // 如果没有来源信息，返回原内容
+    return {
+        text: content.trim(),
+        source: null
+    };
+}
+
 // 将Markdown转换为JSON的函数
 function convertMarkdownToJson(mdFilePath) {
     const content = fs.readFileSync(mdFilePath, 'utf-8');
@@ -20,11 +43,30 @@ function convertMarkdownToJson(mdFilePath) {
     // 解析元数据
     const meta = {};
     metaContent.split('\n').forEach(line => {
-        const match = line.match(/^(\w+):\s*"?(.+?)"?$/);
+        const match = line.match(/^(\w+):\s*(.+)$/);
         if (match) {
-            meta[match[1]] = match[2];
+            let value = match[2].trim();
+            // 处理字符串值（去除引号）
+            if (value.startsWith('"') && value.endsWith('"')) {
+                value = value.slice(1, -1);
+            }
+            // 处理数组（highlights）
+            else if (match[1] === 'highlights') {
+                // 收集所有highlights行
+                return;
+            }
+            meta[match[1]] = value;
         }
     });
+    
+    // 特殊处理highlights数组
+    const highlightsMatch = metaContent.match(/highlights:\s*\n((?:\s+-\s+.+\n?)+)/);
+    if (highlightsMatch) {
+        meta.highlights = highlightsMatch[1]
+            .split('\n')
+            .filter(line => line.trim())
+            .map(line => line.replace(/^\s*-\s+"?(.+?)"?$/, '$1'));
+    }
     
     // 解析各个部分
     const sections = {};
@@ -49,7 +91,32 @@ function convertMarkdownToJson(mdFilePath) {
             nextSection ? nextSection.start : bodyContent.length
         ).trim();
         
-        sections[section.title] = content;
+        // 解析包含来源信息的内容
+        const lines = content.split('\n').filter(line => line.trim());
+        const parsedContent = lines.map(line => {
+            // 处理列表项
+            if (line.match(/^[-*]\s+/) || line.match(/^\d+\.\s+/)) {
+                const listMatch = line.match(/^([-*]|\d+\.)\s+(.+)$/);
+                if (listMatch) {
+                    const parsedItem = parseContentWithSource(listMatch[2]);
+                    return {
+                        type: 'list',
+                        prefix: listMatch[1],
+                        ...parsedItem
+                    };
+                }
+            }
+            // 处理普通段落
+            return {
+                type: 'paragraph',
+                ...parseContentWithSource(line)
+            };
+        });
+        
+        sections[section.title] = {
+            raw: content,
+            parsed: parsedContent
+        };
     }
     
     return {
