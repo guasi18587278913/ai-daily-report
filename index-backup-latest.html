@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日报 - 最新内容</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Segoe UI, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* 日期选择器样式 */
+        .date-selector {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 107, 53, 0.3);
+            padding: 1rem 0;
+        }
+        
+        .date-tabs {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0 1rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .date-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .date-tab {
+            flex-shrink: 0;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .date-tab:hover {
+            border-color: rgba(255, 107, 53, 0.5);
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .date-tab.active {
+            background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
+            border-color: #FF6B35;
+            color: #000000;
+            font-weight: bold;
+        }
+        
+        /* Bento Grid 样式 */
+        .bento-grid {
+            display: grid;
+            gap: 1rem;
+            padding: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .bento-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bento-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 107, 53, 0) 50%);
+            pointer-events: none;
+        }
+        
+        .bento-item:hover {
+            border-color: rgba(255, 107, 53, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(255, 107, 53, 0.2);
+        }
+        
+        /* 来源信息提示框样式 */
+        .has-source {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .has-source:hover {
+            color: #FF6B35;
+        }
+        
+        /* 来源标记样式 */
+        .source-indicator {
+            display: inline-block;
+            font-size: 0.75rem;
+            color: rgba(255, 107, 53, 0.6);
+            margin-left: 0.35rem;
+            transition: all 0.3s ease;
+            vertical-align: baseline;
+            opacity: 0.8;
+        }
+        
+        .has-source:hover .source-indicator {
+            color: #FF6B35;
+            transform: scale(1.2);
+        }
+        
+        /* 来源提示框 */
+        .source-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 20, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 107, 53, 0.6);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+            z-index: 1000;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+        
+        .source-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: rgba(255, 107, 53, 0.6);
+        }
+        
+        .has-source:hover .source-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+        
+        .source-group {
+            color: #FF6B35;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .source-author {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* 标题样式 */
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            line-height: 0.9;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+        
+        .highlight-number {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #FF6B35;
+            line-height: 0.8;
+            margin-bottom: 1rem;
+        }
+        
+        /* 内容样式优化 */
+        .content-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .content-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .content-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #FF6B35;
+            font-weight: bold;
+        }
+        
+        /* 引用块样式 */
+        .quote-block {
+            border-left: 3px solid #FF6B35;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .source-tooltip {
+                font-size: 0.75rem;
+                padding: 0.5rem 0.75rem;
+                white-space: normal;
+                max-width: 200px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .bento-item.full-width {
+                grid-column: span 2;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .bento-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .bento-item.full-width {
+                grid-column: span 3;
+            }
+            
+            .bento-item.half-width {
+                grid-column: span 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 日期选择器 -->
+    <div class="date-selector">
+        <div class="date-tabs">
+            <div class="date-tab">
+                <div class="date-tab-date">07-08</div>
+                <div class="date-tab-day">周二</div>
+            </div>
+            <div class="date-tab">
+                <div class="date-tab-date">07-10</div>
+                <div class="date-tab-day">周四-周五</div>
+            </div>
+            <div class="date-tab active">
+                <div class="date-tab-date">07-11</div>
+                <div class="date-tab-day">周五-周六</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 内容容器 -->
+    <div class="content-container">
+        <!-- 大标题 -->
+        <div class="bento-grid">
+            <div class="bento-item full-width" style="text-align: center; padding: 3rem 1.5rem;">
+                <div class="hero-title">AI日报</div>
+                <div style="font-size: 1.5rem; margin-bottom: 1rem;">2025-07-11 至 2025-07-12 <span style="opacity: 0.6;">周五-周六</span></div>
+                <div style="color: rgba(255, 255, 255, 0.8); font-size: 1.1rem;">Grok 4仓促发布引争议，AI出海变现实战经验分享，开发工具法律风险警示</div>
+            </div>
+            
+            <!-- 三大要点 -->
+            <div class="bento-item">
+                <div class="highlight-number">01</div>
+                <div class="section-subtitle">产品争议</div>
+                <div class="highlight-text">Grok 4发布但实测表现不佳</div>
+            </div>
+            
+            <div class="bento-item">
+                <div class="highlight-number">02</div>
+                <div class="section-subtitle">变现实战</div>
+                <div class="highlight-text">AI产品从116天到9天出单的经验</div>
+            </div>
+            
+            <div class="bento-item">
+                <div class="highlight-number">03</div>
+                <div class="section-subtitle">法律风险</div>
+                <div class="highlight-text">开发者因套壳获利被判刑警示</div>
+            </div>
+            
+            <!-- 今日要点 -->
+            <div class="bento-item full-width">
+                <h2 class="section-title"><i class="fas fa-fire" style="color: #FF6B35;"></i> 今日要点</h2>
+                <ul class="content-list">
+                    <li>
+                        <span class="has-source">
+                            <strong>Grok 4仓促发布，毁誉参半</strong>：xAI发布Grok 4，跑分惊艳但实际测试中编码与识图能力拉胯，被群友用"六指图"反复测试打脸
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AIGC 周刊会员群 02
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>AI出海变现实战复盘引爆社群</strong>：【深海圈】"林悦己"的盈利分享成为焦点，从业余项目到快速出单的路径引发深度讨论
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> 【深海圈】海外AI产品 -交流1群
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>OpenAI加速产品化，硬件野心显现</strong>：OpenAI被曝将推AI浏览器，并已将乔纳森·艾维的硬件公司并入麾下
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AIGC 周刊会员群 02
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 热门话题 -->
+            <div class="bento-item half-width">
+                <h2 class="section-title"><i class="fas fa-comments" style="color: #FF6B35;"></i> 热门话题</h2>
+                <div class="quote-block">
+                    <span class="has-source">
+                        "grok 4 根本没法说服它是 6 根，很嘴硬。"
+                        <span class="source-indicator">📍</span>
+                        <span class="source-tooltip">
+                            <div class="source-group">
+                                <i class="fas fa-users"></i> AIGC 周刊会员群 02
+                            </div>
+                            <div class="source-author">
+                                <i class="fas fa-user"></i> 归藏
+                            </div>
+                        </span>
+                    </span>
+                </div>
+                <div class="quote-block" style="margin-top: 1rem;">
+                    <span class="has-source">
+                        "每个人都要用到自己的优势，去打大众的劣势，这样才顺手。"
+                        <span class="source-indicator">📍</span>
+                        <span class="source-tooltip">
+                            <div class="source-group">
+                                <i class="fas fa-users"></i> 【深海圈】海外AI产品 -交流1群
+                            </div>
+                            <div class="source-author">
+                                <i class="fas fa-user"></i> 刘小排
+                            </div>
+                        </span>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- 工具情报 -->
+            <div class="bento-item">
+                <h2 class="section-title"><i class="fas fa-tools" style="color: #FF6B35;"></i> 工具情报</h2>
+                <div class="section-subtitle">新发现</div>
+                <ul class="content-list">
+                    <li>
+                        <span class="has-source">
+                            <strong>aimemo.cards</strong>：能将聊天记录、网页内容快速保存为"卡片"的知识库工具
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AI传术师编辑部
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> 七天可爱多
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>Magic Animator</strong>：Figma插件，能一键将静态设计稿转化为交互动画
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AIGC 周刊会员群 02
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 行业动态 -->
+            <div class="bento-item full-width">
+                <h2 class="section-title"><i class="fas fa-chart-line" style="color: #FF6B35;"></i> 行业动态</h2>
+                <ul class="content-list">
+                    <li>
+                        <span class="has-source">
+                            <strong>Google</strong> 发布医疗多模态模型MedGemma 27B，能解读X光、病理切片等多种医疗影像
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> All in AI
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>Anthropic</strong> 年化收入从年初的10亿美元飙升至40亿美元，OpenAI则达到100亿美元
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> All in AI
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 添加交互效果
+        document.querySelectorAll('.date-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.date-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
