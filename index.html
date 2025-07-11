@@ -105,37 +105,39 @@
         
         /* 导航栏样式 */
         .header {
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 165, 0, 0.1));
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95), rgba(30, 30, 30, 0.95));
             border-bottom: 1px solid var(--border-color);
-            padding: 1.5rem 0;
+            padding: 1rem 0;
             text-align: center;
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
         }
         
         .hero-title {
-            font-size: 3rem;
+            font-size: 2rem;
             font-weight: 900;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
+            display: inline-block;
         }
         
         /* 日期选择器 */
         .date-selector {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin-top: 1rem;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
             flex-wrap: wrap;
         }
         
         .date-tab {
-            padding: 0.5rem 1.5rem;
+            padding: 0.4rem 1rem;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 2rem;
@@ -143,6 +145,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            font-size: 0.9rem;
         }
         
         .date-tab::before {
@@ -175,7 +178,7 @@
         .content-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 1.5rem 1rem;
         }
         
         .daily-content {
@@ -293,10 +296,59 @@
             transform: translateX(5px);
         }
         
+        /* 紧凑模式切换按钮 */
+        .compact-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .compact-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.5);
+        }
+        
+        /* 紧凑头部模式 */
+        .header.compact {
+            padding: 0.5rem 0;
+            background: rgba(26, 26, 26, 0.98);
+        }
+        
+        .header.compact .hero-title {
+            font-size: 1.25rem;
+            margin-bottom: 0;
+        }
+        
+        .header.compact .text-muted {
+            display: none;
+        }
+        
+        .header.compact .date-selector {
+            margin-top: 0.25rem;
+        }
+        
+        .header.compact .date-tab {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.85rem;
+        }
+        
         /* 响应式设计 */
         @media (max-width: 768px) {
             .hero-title {
-                font-size: 2rem;
+                font-size: 1.5rem;
             }
             
             .content-container {
@@ -306,14 +358,29 @@
             .section-card {
                 padding: 1.5rem 1rem;
             }
+            
+            .header {
+                padding: 0.75rem 0;
+            }
+            
+            .compact-toggle {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- 紧凑模式切换按钮 -->
+    <button class="compact-toggle" id="compactToggle" title="切换紧凑模式">
+        <i class="fas fa-compress"></i>
+    </button>
+    
     <!-- 头部 -->
     <div class="header">
-        <h1 class="hero-title">AI日报</h1>
-        <p class="text-muted">每日精选AI行业动态，洞察前沿趋势</p>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+            <h1 class="hero-title">AI日报</h1>
+            <p class="text-muted" style="margin: 0; font-size: 0.9rem;">每日精选AI行业动态，洞察前沿趋势</p>
+        </div>
         
         <!-- 日期选择器 -->
         <div class="date-selector">
@@ -733,6 +800,54 @@
                 }
             });
         });
+        
+        // 紧凑模式切换
+        const compactToggle = document.getElementById('compactToggle');
+        const header = document.querySelector('.header');
+        let isCompact = false;
+        
+        // 检查是否需要自动启用紧凑模式
+        function checkAutoCompact() {
+            const scrollY = window.scrollY;
+            if (scrollY > 100 && !isCompact) {
+                enableCompactMode();
+            } else if (scrollY <= 100 && isCompact && !localStorage.getItem('manualCompact')) {
+                disableCompactMode();
+            }
+        }
+        
+        function enableCompactMode() {
+            isCompact = true;
+            header.classList.add('compact');
+            compactToggle.innerHTML = '<i class="fas fa-expand"></i>';
+            compactToggle.title = '退出紧凑模式';
+        }
+        
+        function disableCompactMode() {
+            isCompact = false;
+            header.classList.remove('compact');
+            compactToggle.innerHTML = '<i class="fas fa-compress"></i>';
+            compactToggle.title = '切换紧凑模式';
+        }
+        
+        // 手动切换
+        compactToggle.addEventListener('click', function() {
+            if (isCompact) {
+                disableCompactMode();
+                localStorage.setItem('manualCompact', 'false');
+            } else {
+                enableCompactMode();
+                localStorage.setItem('manualCompact', 'true');
+            }
+        });
+        
+        // 滚动监听
+        window.addEventListener('scroll', checkAutoCompact);
+        
+        // 页面加载时检查状态
+        if (localStorage.getItem('manualCompact') === 'true') {
+            enableCompactMode();
+        }
     </script>
 </body>
 </html>
