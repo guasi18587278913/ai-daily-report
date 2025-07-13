@@ -52,12 +52,32 @@ export default function DailyReport({ reportData, availableDates, error }) {
     );
   }
 
+  // 计算各板块的数量
+  const getToolNewsCount = () => {
+    if (Array.isArray(reportData.toolNews)) {
+      return reportData.toolNews.length;
+    }
+    const newTools = reportData.toolNews?.newTools?.length || 0;
+    const tips = reportData.toolNews?.tips?.length || 0;
+    return newTools + tips;
+  };
+
+  const getIndustryCount = () => {
+    if (Array.isArray(reportData.industry)) {
+      return reportData.industry.length;
+    }
+    const companies = reportData.industry?.companies?.length || 0;
+    const products = reportData.industry?.products?.length || 0;
+    const revenue = reportData.industry?.revenue?.length || 0;
+    return companies + products + revenue;
+  };
+
   const sections = [
     { id: 'highlights', icon: '📌', title: '今日要点', count: reportData.highlights?.length || 0 },
     { id: 'hot-topics', icon: '🔥', title: '热门话题', count: reportData.hotTopics?.length || 0 },
-    { id: 'tools', icon: '🛠', title: '工具情报', count: reportData.toolNews?.length || 0 },
+    { id: 'tools', icon: '🛠', title: '工具情报', count: getToolNewsCount() },
     { id: 'practice', icon: '💡', title: '实战干货', count: reportData.practice?.length || 0 },
-    { id: 'industry', icon: '📊', title: '行业动态', count: reportData.industry?.length || 0 },
+    { id: 'industry', icon: '📊', title: '行业动态', count: getIndustryCount() },
     { id: 'qa', icon: '💬', title: '问答精选', count: reportData.qa?.length || 0 },
     { id: 'risk-warning', icon: '⚠️', title: '风险提示', count: reportData.riskWarning?.length || 0 }
   ];

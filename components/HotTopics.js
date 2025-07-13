@@ -44,7 +44,11 @@ export default function HotTopics({ data = [] }) {
               {topic.source && (
                 <span className="hot-topic-meta-item">
                   <span className="meta-icon">💬</span>
-                  <span>{topic.source}</span>
+                  <span>
+                    {typeof topic.source === 'string' 
+                      ? topic.source 
+                      : topic.source.name + (topic.source.author ? ` - ${topic.source.author}` : '')}
+                  </span>
                 </span>
               )}
               {topic.tools && (

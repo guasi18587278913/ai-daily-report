@@ -1,5 +1,13 @@
-export default function Industry({ data = [] }) {
-  if (!data || data.length === 0) {
+export default function Industry({ data = {} }) {
+  // 兼容旧数据格式（数组）和新数据格式（对象）
+  const items = Array.isArray(data) ? data : [];
+  const companies = !Array.isArray(data) ? (data.companies || []) : [];
+  const products = !Array.isArray(data) ? (data.products || []) : [];
+  const revenue = !Array.isArray(data) ? (data.revenue || []) : [];
+  
+  const allItems = [...items, ...companies, ...products, ...revenue];
+  
+  if (allItems.length === 0) {
     return null;
   }
 
@@ -10,50 +18,153 @@ export default function Industry({ data = [] }) {
         <h2 className="section-title">行业动态</h2>
       </div>
       
-      <div className="industry-list">
-        {data.map((item, index) => (
-          <div key={index} className="industry-item">
-            <div className="industry-icon">
-              {index + 1}
-            </div>
-            <div className="industry-content">
-              <div className="industry-header">
-                <h4 className="industry-title">{item.title || item.name}</h4>
-                {item.type && (
-                  <span className={`industry-type type-${item.type}`}>
-                    {getTypeLabel(item.type)}
-                  </span>
+      {/* 公司动态 */}
+      {companies.length > 0 && (
+        <>
+          <h3 className="subsection-title">公司动态</h3>
+          <div className="industry-list">
+            {companies.map((item, index) => (
+              <div key={`company-${index}`} className="industry-item">
+                <div className="industry-icon">
+                  🏢
+                </div>
+                <div className="industry-content">
+                  <div className="industry-header">
+                    <h4 className="industry-title">{item.company}</h4>
+                  </div>
+                  <p className="industry-description">{item.news}</p>
+                  {item.source && (
+                    <div className="industry-source">
+                      <span className="source-label">来源：</span>
+                      <span className="source-value">
+                        {typeof item.source === 'string' 
+                          ? item.source 
+                          : item.source.name}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* 产品发布 */}
+      {products.length > 0 && (
+        <>
+          <h3 className="subsection-title" style={{marginTop: companies.length > 0 ? '32px' : '0'}}>
+            产品发布
+          </h3>
+          <div className="industry-list">
+            {products.map((item, index) => (
+              <div key={`product-${index}`} className="industry-item">
+                <div className="industry-icon">
+                  🚀
+                </div>
+                <div className="industry-content">
+                  <div className="industry-header">
+                    <h4 className="industry-title">{item.name}</h4>
+                  </div>
+                  <p className="industry-description">{item.description}</p>
+                  {item.source && (
+                    <div className="industry-source">
+                      <span className="source-label">来源：</span>
+                      <span className="source-value">
+                        {typeof item.source === 'string' 
+                          ? item.source 
+                          : item.source.name}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* 收入数据 */}
+      {revenue.length > 0 && (
+        <>
+          <h3 className="subsection-title" style={{marginTop: (companies.length > 0 || products.length > 0) ? '32px' : '0'}}>
+            收入动态
+          </h3>
+          <div className="industry-list">
+            {revenue.map((item, index) => (
+              <div key={`revenue-${index}`} className="industry-item">
+                <div className="industry-icon">
+                  💰
+                </div>
+                <div className="industry-content">
+                  <div className="industry-header">
+                    <h4 className="industry-title">{item.company}</h4>
+                  </div>
+                  <p className="industry-description">{item.data}</p>
+                  {item.source && (
+                    <div className="industry-source">
+                      <span className="source-label">来源：</span>
+                      <span className="source-value">
+                        {typeof item.source === 'string' 
+                          ? item.source 
+                          : item.source.name}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* 兼容旧格式 */}
+      {items.length > 0 && (
+        <div className="industry-list">
+          {items.map((item, index) => (
+            <div key={`item-${index}`} className="industry-item">
+              <div className="industry-icon">
+                {index + 1}
+              </div>
+              <div className="industry-content">
+                <div className="industry-header">
+                  <h4 className="industry-title">{item.title || item.name}</h4>
+                  {item.type && (
+                    <span className={`industry-type type-${item.type}`}>
+                      {getTypeLabel(item.type)}
+                    </span>
+                  )}
+                </div>
+                
+                <p className="industry-description">
+                  {item.description || item.content}
+                </p>
+                
+                {item.amount && (
+                  <div className="industry-highlight">
+                    <span className="highlight-icon">💰</span>
+                    <span className="highlight-text">交易金额：{item.amount}</span>
+                  </div>
+                )}
+                
+                {item.impact && (
+                  <div className="industry-highlight">
+                    <span className="highlight-icon">📈</span>
+                    <span className="highlight-text">影响：{item.impact}</span>
+                  </div>
+                )}
+                
+                {item.significance && (
+                  <div className="industry-insight">
+                    <span className="insight-icon">🎯</span>
+                    <span className="insight-text">{item.significance}</span>
+                  </div>
                 )}
               </div>
-              
-              <p className="industry-description">
-                {item.description || item.content}
-              </p>
-              
-              {item.amount && (
-                <div className="industry-highlight">
-                  <span className="highlight-icon">💰</span>
-                  <span className="highlight-text">交易金额：{item.amount}</span>
-                </div>
-              )}
-              
-              {item.impact && (
-                <div className="industry-highlight">
-                  <span className="highlight-icon">📈</span>
-                  <span className="highlight-text">影响：{item.impact}</span>
-                </div>
-              )}
-              
-              {item.significance && (
-                <div className="industry-insight">
-                  <span className="insight-icon">🎯</span>
-                  <span className="insight-text">{item.significance}</span>
-                </div>
-              )}
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <style jsx>{`
         .section {
@@ -75,7 +186,9 @@ export default function Industry({ data = [] }) {
           display: flex;
           align-items: center;
           gap: 12px;
-          margin-bottom: 24px;
+          margin-bottom: 20px;
+          padding-bottom: 16px;
+          border-bottom: 1px solid #e5e7eb;
         }
 
         .section-icon {
@@ -84,9 +197,16 @@ export default function Industry({ data = [] }) {
 
         .section-title {
           font-size: 20px;
-          font-weight: 600;
-          color: #212121;
+          font-weight: 700;
+          color: #111827;
           flex: 1;
+        }
+
+        .subsection-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: #374151;
+          margin-bottom: 16px;
         }
 
         .industry-list {
@@ -102,108 +222,98 @@ export default function Industry({ data = [] }) {
           padding: 20px;
           background: #fafafa;
           border-radius: 16px;
+          border: 1px solid transparent;
           transition: all 0.2s ease;
-          border: 1px solid #f0f0f0;
         }
 
         .industry-item:hover {
-          transform: translateX(4px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+          background: #f7f7f7;
+          border-color: #00a968;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 169, 104, 0.1);
         }
 
         .industry-icon {
-          width: 40px;
-          height: 40px;
-          background: linear-gradient(135deg, #00a968 0%, #00c97a 100%);
-          border-radius: 10px;
+          width: 36px;
+          height: 36px;
+          background: #f3f4f6;
+          color: #6b7280;
+          border-radius: 8px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 16px;
           font-weight: 700;
-          color: white;
+          font-size: 16px;
           flex-shrink: 0;
-          box-shadow: 0 2px 6px rgba(0, 169, 104, 0.25);
         }
 
         .industry-content {
           flex: 1;
-          min-width: 0;
         }
 
         .industry-header {
           display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
+          align-items: center;
           gap: 12px;
           margin-bottom: 8px;
-          flex-wrap: wrap;
         }
 
         .industry-title {
           font-size: 16px;
           font-weight: 600;
           color: #111827;
-          line-height: 1.3;
+          line-height: 1.4;
         }
 
         .industry-type {
-          padding: 2px 8px;
+          padding: 3px 10px;
           border-radius: 4px;
           font-size: 11px;
           font-weight: 600;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
-          flex-shrink: 0;
-        }
-
-        .type-merger {
-          background: rgba(255, 77, 79, 0.1);
-          color: #ff4d4f;
         }
 
         .type-funding {
-          background: rgba(82, 196, 26, 0.1);
-          color: #52c41a;
+          background: #dbeafe;
+          color: #1e40af;
         }
 
-        .type-layoff {
-          background: rgba(250, 173, 20, 0.1);
-          color: #faad14;
+        .type-acquisition {
+          background: #f3e8ff;
+          color: #6b21a8;
         }
 
         .type-product {
-          background: rgba(24, 144, 255, 0.1);
-          color: #1890ff;
+          background: #d1fae5;
+          color: #065f46;
         }
 
         .type-partnership {
-          background: rgba(114, 46, 209, 0.1);
-          color: #722ed1;
+          background: #fed7aa;
+          color: #92400e;
         }
 
         .industry-description {
           font-size: 14px;
           color: #4b5563;
-          line-height: 1.5;
+          line-height: 1.6;
           margin-bottom: 12px;
         }
 
         .industry-highlight {
-          display: inline-flex;
+          display: flex;
           align-items: center;
           gap: 8px;
-          margin-right: 16px;
+          font-size: 13px;
+          color: #059669;
           margin-bottom: 8px;
-          font-size: 14px;
         }
 
         .highlight-icon {
-          font-size: 16px;
+          font-size: 14px;
         }
 
         .highlight-text {
-          color: #00a968;
           font-weight: 500;
         }
 
@@ -211,38 +321,56 @@ export default function Industry({ data = [] }) {
           display: flex;
           align-items: flex-start;
           gap: 8px;
-          margin-top: 12px;
-          padding: 12px 16px;
+          padding: 12px;
           background: rgba(0, 169, 104, 0.08);
-          border-radius: 10px;
+          border-radius: 8px;
           border-left: 3px solid #00a968;
+          margin-top: 12px;
         }
 
         .insight-icon {
-          font-size: 16px;
-          color: #3b82f6;
-          flex-shrink: 0;
+          font-size: 14px;
+          margin-top: 2px;
         }
 
         .insight-text {
-          font-size: 14px;
-          color: #4b5563;
+          font-size: 13px;
+          color: #374151;
           line-height: 1.5;
         }
 
+        .industry-source {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 12px;
+          color: #9ca3af;
+          margin-top: 8px;
+        }
+
+        .source-label {
+          color: #9ca3af;
+        }
+
+        .source-value {
+          color: #6b7280;
+        }
+
         @media (max-width: 768px) {
+          .section {
+            padding: 20px;
+          }
+
           .industry-item {
-            flex-direction: column;
-            gap: 12px;
+            padding: 16px;
           }
 
-          .industry-header {
-            flex-direction: column;
-            gap: 8px;
+          .industry-title {
+            font-size: 15px;
           }
 
-          .industry-type {
-            align-self: flex-start;
+          .industry-description {
+            font-size: 13px;
           }
         }
       `}</style>
@@ -250,15 +378,12 @@ export default function Industry({ data = [] }) {
   );
 }
 
-
-// 获取类型标签
 function getTypeLabel(type) {
-  const labels = {
-    merger: '收购',
+  const typeMap = {
     funding: '融资',
-    layoff: '裁员',
-    product: '发布',
+    acquisition: '收购',
+    product: '产品',
     partnership: '合作'
   };
-  return labels[type] || type;
+  return typeMap[type] || type;
 }
