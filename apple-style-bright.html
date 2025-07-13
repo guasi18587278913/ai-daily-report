@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日报 - Bright Apple Style</title>
+    
+    <style>
+        :root {
+            /* 明亮的主题色系统 */
+            --primary: #579d8d;
+            --primary-light: #7ec4b4;
+            --primary-lighter: #a8e0d5;
+            --primary-soft: #e8f5f2;
+            --primary-gradient: linear-gradient(135deg, #579d8d 0%, #7ec4b4 100%);
+            
+            /* 明亮的辅助色 */
+            --accent-purple: #a78bfa;
+            --accent-blue: #60a5fa;
+            --accent-green: #34d399;
+            --accent-pink: #f472b6;
+            --accent-yellow: #fbbf24;
+            
+            /* 明亮的中性色 */
+            --bg-primary: #ffffff;
+            --bg-secondary: #fafbfc;
+            --bg-tertiary: #f6f8fa;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            
+            /* 边框和阴影 */
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.06), 0 4px 6px rgba(0, 0, 0, 0.02);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 10px 10px rgba(0, 0, 0, 0.02);
+            --shadow-colored: 0 10px 30px rgba(87, 157, 141, 0.15);
+            
+            /* 动画 */
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        
+        /* 装饰性背景 */
+        .bg-decoration {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .bg-decoration-1 {
+            background: var(--accent-blue);
+            top: -200px;
+            right: -200px;
+            animation: float-1 20s ease-in-out infinite;
+        }
+        
+        .bg-decoration-2 {
+            background: var(--accent-purple);
+            bottom: -200px;
+            left: -200px;
+            animation: float-2 25s ease-in-out infinite;
+        }
+        
+        .bg-decoration-3 {
+            background: var(--primary-light);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: float-3 30s ease-in-out infinite;
+        }
+        
+        @keyframes float-1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-100px, 100px) scale(1.2); }
+        }
+        
+        @keyframes float-2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(100px, -100px) scale(0.8); }
+        }
+        
+        @keyframes float-3 {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.3); }
+        }
+        
+        /* 导航栏 - 更明亮 */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 1200px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            z-index: 1000;
+            transition: var(--transition);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .navbar-content {
+            height: 100%;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+        
+        /* 日期选择器 - 更活泼 */
+        .date-picker {
+            display: flex;
+            gap: 8px;
+            padding: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+        }
+        
+        .date-pill {
+            padding: 10px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--bg-primary);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+        
+        .date-pill:hover {
+            border-color: var(--primary-light);
+            color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .date-pill.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: var(--shadow-colored);
+            transform: translateY(-2px);
+        }
+        
+        /* Hero 区域 - 更明亮 */
+        .hero {
+            margin-top: 120px;
+            padding: 100px 32px;
+            text-align: center;
+            position: relative;
+            background: var(--bg-primary);
+            border-radius: 0 0 50px 50px;
+        }
+        
+        /* 渐变光晕 */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 400px;
+            background: radial-gradient(ellipse at center, var(--primary-soft) 0%, transparent 70%);
+            opacity: 0.6;
+            z-index: -1;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .hero-badge-icon {
+            width: 20px;
+            height: 20px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .hero-title {
+            font-size: clamp(48px, 8vw, 72px);
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+        
+        .hero-title-gradient {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* 内容区域 */
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 32px;
+        }
+        
+        /* 特色部分标题 */
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+        
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -1px;
+        }
+        
+        /* 卡片网格 - 更明亮 */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 80px;
+        }
+        
+        /* 卡片样式 - 明亮版 */
+        .card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 32px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-light);
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+        }
+        
+        /* 彩色图标 */
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            font-size: 28px;
+            position: relative;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .card-icon.icon-purple {
+            background: linear-gradient(135deg, #a78bfa 0%, #c084fc 100%);
+            color: white;
+        }
+        
+        .card-icon.icon-blue {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: white;
+        }
+        
+        .card-icon.icon-green {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            color: white;
+        }
+        
+        .card-icon.icon-pink {
+            background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+            color: white;
+        }
+        
+        .card-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        
+        .card-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .card-description {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+        
+        .card-action {
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .card-action:hover {
+            background: var(--primary-soft);
+            transform: translateX(4px);
+        }
+        
+        /* 特色卡片 - 渐变边框 */
+        .feature-card {
+            grid-column: span 2;
+            background: var(--bg-card);
+            position: relative;
+            padding: 48px;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: var(--primary-gradient);
+            border-radius: 24px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+        
+        /* 统计区域 - 多彩设计 */
+        .stats-container {
+            background: var(--bg-primary);
+            border-radius: 32px;
+            padding: 48px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 80px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 24px;
+            border-radius: 20px;
+            background: var(--bg-tertiary);
+            transition: var(--transition);
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .stat-number {
+            font-size: 40px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        
+        /* 装饰性元素 */
+        .decoration-dots {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            opacity: 0.1;
+        }
+        
+        .decoration-dots::before,
+        .decoration-dots::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .navbar {
+                top: 10px;
+                width: calc(100% - 20px);
+            }
+            
+            .hero {
+                padding: 60px 20px;
+                border-radius: 0 0 30px 30px;
+            }
+            
+            .content {
+                padding: 40px 20px;
+            }
+            
+            .feature-card {
+                grid-column: span 1;
+                padding: 32px;
+            }
+            
+            .stats-container {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 装饰性背景 -->
+    <div class="bg-decoration bg-decoration-1"></div>
+    <div class="bg-decoration bg-decoration-2"></div>
+    <div class="bg-decoration bg-decoration-3"></div>
+    
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">AI Daily ✨</div>
+            <div class="date-picker">
+                <button class="date-pill">7月10日</button>
+                <button class="date-pill active">7月11日</button>
+                <button class="date-pill">7月12日</button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero 区域 -->
+    <section class="hero">
+        <div class="hero-badge">
+            <div class="hero-badge-icon">🎯</div>
+            <span>每日精选 · 前沿动态</span>
+        </div>
+        <h1 class="hero-title">
+            探索<span class="hero-title-gradient">人工智能</span>的无限可能
+        </h1>
+        <p class="hero-subtitle">汇聚全球AI领域的最新突破、深度洞察与创新应用，助您把握科技脉搏</p>
+    </section>
+    
+    <!-- 内容区域 -->
+    <main class="content">
+        <!-- 今日焦点 -->
+        <div class="section-header">
+            <div class="section-label">
+                <span>🔥</span>
+                <span>今日焦点</span>
+            </div>
+            <h2 class="section-title">重要突破与发布</h2>
+        </div>
+        
+        <div class="card-grid">
+            <!-- 特色卡片 -->
+            <div class="card feature-card">
+                <div class="card-icon icon-purple">🚀</div>
+                <div class="card-label">重磅发布</div>
+                <h3 class="card-title">OpenAI 发布 GPT-5 预览版，性能提升超40%</h3>
+                <p class="card-description">
+                    最新一代语言模型在推理能力、创造力和多模态理解方面取得重大突破。支持更长的上下文窗口，
+                    可以处理复杂的多步骤任务，为AI应用开辟了新的可能性。
+                </p>
+                <div class="card-footer">
+                    <div class="card-meta">
+                        <span>⏰ 2小时前</span>
+                        <span>🔥 热度 9.8</span>
+                        <span>💬 1.2k评论</span>
+                    </div>
+                    <button class="card-action">查看详情 →</button>
+                </div>
+            </div>
+            
+            <!-- 普通卡片 -->
+            <div class="card">
+                <div class="card-icon icon-blue">🧠</div>
+                <div class="card-label">技术创新</div>
+                <h3 class="card-title">Meta 推出多模态AI系统 Chameleon</h3>
+                <p class="card-description">整合视觉、语言和音频理解能力，实现更自然的人机交互体验。</p>
+                <div class="card-footer">
+                    <div class="card-meta">
+                        <span>⏰ 3小时前</span>
+                    </div>
+                    <button class="card-action">阅读 →</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon icon-green">💡</div>
+                <div class="card-label">产品更新</div>
+                <h3 class="card-title">Google Gemini 2.0 正式上线</h3>
+                <p class="card-description">性能全面升级，支持实时协作和代码生成，开发效率提升显著。</p>
+                <div class="card-footer">
+                    <div class="card-meta">
+                        <span>⏰ 5小时前</span>
+                    </div>
+                    <button class="card-action">了解 →</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon icon-pink">🔬</div>
+                <div class="card-label">学术前沿</div>
+                <h3 class="card-title">清华大学发布千亿参数中文大模型</h3>
+                <p class="card-description">专为中文优化，在多项任务上超越国际先进水平，推动本土AI发展。</p>
+                <div class="card-footer">
+                    <div class="card-meta">
+                        <span>⏰ 6小时前</span>
+                    </div>
+                    <button class="card-action">探索 →</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 统计数据 -->
+        <div class="section-header">
+            <div class="section-label">
+                <span>📊</span>
+                <span>数据概览</span>
+            </div>
+            <h2 class="section-title">今日关键指标</h2>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #579d8d 0%, #7ec4b4 100%); color: white;">
+                        📰
+                    </div>
+                    <div class="stat-number" style="background: linear-gradient(135deg, #579d8d 0%, #7ec4b4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">42</div>
+                    <div class="stat-label">重要新闻</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #a78bfa 0%, #c084fc 100%); color: white;">
+                        🚀
+                    </div>
+                    <div class="stat-number" style="background: linear-gradient(135deg, #a78bfa 0%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">8</div>
+                    <div class="stat-label">技术突破</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); color: white;">
+                        📦
+                    </div>
+                    <div class="stat-number" style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">15</div>
+                    <div class="stat-label">产品发布</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #34d399 0%, #10b981 100%); color: white;">
+                        👁
+                    </div>
+                    <div class="stat-number" style="background: linear-gradient(135deg, #34d399 0%, #10b981 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">128K</div>
+                    <div class="stat-label">阅读量</div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // 添加交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 日期选择器交互
+            const datePills = document.querySelectorAll('.date-pill');
+            datePills.forEach(pill => {
+                pill.addEventListener('click', function() {
+                    datePills.forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 添加切换动画
+                    const cards = document.querySelectorAll('.card');
+                    cards.forEach((card, index) => {
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateY(20px)';
+                        
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'translateY(0)';
+                            card.style.transition = 'all 0.5s ease';
+                        }, index * 100);
+                    });
+                });
+            });
+            
+            // 添加数字动画
+            const statNumbers = document.querySelectorAll('.stat-number');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = entry.target;
+                        const finalValue = target.textContent;
+                        let currentValue = 0;
+                        const increment = Math.ceil(parseInt(finalValue) / 20);
+                        
+                        const counter = setInterval(() => {
+                            if (currentValue < parseInt(finalValue)) {
+                                currentValue += increment;
+                                if (currentValue > parseInt(finalValue)) {
+                                    currentValue = finalValue;
+                                }
+                                target.textContent = currentValue;
+                            } else {
+                                target.textContent = finalValue;
+                                clearInterval(counter);
+                            }
+                        }, 50);
+                        
+                        observer.unobserve(target);
+                    }
+                });
+            });
+            
+            statNumbers.forEach(number => {
+                observer.observe(number);
+            });
+            
+            // 平滑滚动效果
+            const navbar = document.querySelector('.navbar');
+            let lastScroll = 0;
+            
+            window.addEventListener('scroll', function() {
+                const currentScroll = window.pageYOffset;
+                
+                if (currentScroll > 100) {
+                    navbar.style.transform = 'translateX(-50%) translateY(-10px)';
+                    navbar.style.boxShadow = '0 10px 40px rgba(0, 0, 0, 0.1)';
+                } else {
+                    navbar.style.transform = 'translateX(-50%) translateY(0)';
+                    navbar.style.boxShadow = 'var(--shadow-lg)';
+                }
+                
+                lastScroll = currentScroll;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日报 - 精简版</title>
+    
+    <style>
+        :root {
+            /* 主题色系统 */
+            --primary: #579d8d;
+            --primary-light: #7ab5a8;
+            --primary-lighter: #9cc9c0;
+            --primary-dark: #3e7165;
+            --primary-darker: #2a4d45;
+            
+            /* 中性色 - 高对比度 */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #f3f4f6;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --text-tertiary: #6b7280;
+            
+            /* 功能色 */
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            
+            /* 分类色彩 */
+            --hot-color: #ef4444;
+            --tool-color: #6b7280;
+            --practice-color: #f59e0b;
+            --industry-color: #3b82f6;
+            --qa-color: #8b5cf6;
+            --risk-color: #dc2626;
+            
+            /* 动画 */
+            --transition: all 0.2s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* 导航栏 */
+        .navbar {
+            position: sticky;
+            top: 0;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* 日期选择器 */
+        .date-picker {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-tertiary);
+            padding: 4px;
+            border-radius: 10px;
+        }
+        
+        .date-pill {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+        
+        .date-pill:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .date-pill.active {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        
+        /* 主容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 24px;
+            padding: 24px;
+        }
+        
+        /* 侧边栏 */
+        .sidebar {
+            width: 220px;
+            flex-shrink: 0;
+        }
+        
+        .sidebar-nav {
+            position: sticky;
+            top: 100px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: var(--transition);
+            margin-bottom: 2px;
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active {
+            background: rgba(87, 157, 141, 0.1);
+            color: var(--primary);
+        }
+        
+        .nav-item-icon {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .nav-item-text {
+            flex: 1;
+        }
+        
+        .nav-item-badge {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* 内容区 */
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        /* 板块样式 */
+        .section {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .section-icon {
+            font-size: 24px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            flex: 1;
+        }
+        
+        /* 今日要点 - 简洁列表 */
+        .highlights-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .highlight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        .highlight-bullet {
+            color: var(--primary);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        /* 热门话题 - 紧凑卡片 */
+        .hot-topics-grid {
+            display: grid;
+            gap: 16px;
+        }
+        
+        .hot-topic-card {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+        
+        .hot-topic-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .hot-topic-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .hot-topic-number {
+            width: 28px;
+            height: 28px;
+            background: var(--hot-color);
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .hot-topic-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+        
+        .hot-topic-content {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        
+        .hot-topic-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+        
+        .hot-topic-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* 工具情报 - 紧凑列表 */
+        .tools-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .tool-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+        
+        .tool-item:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .tool-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .tool-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .tool-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* 简洁的标签 */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .tag.tag-hot {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--hot-color);
+        }
+        
+        .tag.tag-new {
+            background: rgba(87, 157, 141, 0.1);
+            color: var(--primary);
+        }
+        
+        /* 问答精选 - 折叠样式 */
+        .qa-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .qa-item {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .qa-question {
+            padding: 16px;
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: var(--transition);
+        }
+        
+        .qa-question:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .qa-toggle {
+            color: var(--text-tertiary);
+            transition: transform 0.2s;
+        }
+        
+        .qa-item.expanded .qa-toggle {
+            transform: rotate(180deg);
+        }
+        
+        .qa-answer {
+            padding: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .qa-item.expanded .qa-answer {
+            display: block;
+        }
+        
+        /* 风险提醒 - 警告样式 */
+        .risk-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .risk-icon {
+            color: var(--risk-color);
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .risk-content {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 16px;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .sidebar-nav {
+                position: static;
+                display: flex;
+                overflow-x: auto;
+                padding: 4px;
+                gap: 4px;
+            }
+            
+            .nav-item {
+                flex-shrink: 0;
+                margin-bottom: 0;
+            }
+            
+            .nav-item-text {
+                display: none;
+            }
+            
+            .nav-item-badge {
+                display: none;
+            }
+        }
+        
+        /* 加载动画 */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-secondary) 50%, var(--bg-tertiary) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease-in-out infinite;
+            border-radius: 8px;
+            height: 20px;
+            margin-bottom: 12px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">AI Daily</div>
+            <div class="date-picker" id="datePicker">
+                <!-- 日期按钮将通过JS生成 -->
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#highlights" class="nav-item active">
+                    <span class="nav-item-icon">📌</span>
+                    <span class="nav-item-text">今日要点</span>
+                </a>
+                <a href="#hot-topics" class="nav-item">
+                    <span class="nav-item-icon">🔥</span>
+                    <span class="nav-item-text">热门话题</span>
+                    <span class="nav-item-badge">(TOP 3)</span>
+                </a>
+                <a href="#tools" class="nav-item">
+                    <span class="nav-item-icon">🛠</span>
+                    <span class="nav-item-text">工具情报</span>
+                </a>
+                <a href="#practice" class="nav-item">
+                    <span class="nav-item-icon">💡</span>
+                    <span class="nav-item-text">实战干货</span>
+                </a>
+                <a href="#industry" class="nav-item">
+                    <span class="nav-item-icon">📊</span>
+                    <span class="nav-item-text">行业动态</span>
+                </a>
+                <a href="#qa" class="nav-item">
+                    <span class="nav-item-icon">💬</span>
+                    <span class="nav-item-text">问答精选</span>
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- 内容区 -->
+        <main class="content" id="mainContent">
+            <!-- 内容将通过JS动态生成 -->
+        </main>
+    </div>
+    
+    <script>
+        // 模拟数据
+        const mockData = {
+            "2025-07-07": {
+                date: "2025-07-07",
+                dayOfWeek: "周一",
+                summary: "Cursor引发信任危机，AI长视频处理方案成熟，AI Agent应用爆发",
+                highlights: [
+                    "Cursor 引发"信任危机"，开发者掀起向 Claude Code 迁移潮",
+                    "AI 长视频内容处理方案成熟，成本与效率取得平衡",
+                    "AI Agent 与工作流应用爆发，从个人提效到重塑组织"
+                ],
+                hotTopics: [
+                    {
+                        title: "Cursor 引发"信任危机"，开发者掀起向 Claude Code 迁移潮",
+                        content: "Cursor 近期调整计费模式与服务质量下降，引发用户普遍不满。新版计费（按点数消耗）被指"加价减量"，$20的Pro额度消耗极快。",
+                        keyData: "几次对话就消耗 150 点；一次 1小时的高强度使用就触发了速率限制",
+                        source: "【深海圈】成员"
+                    },
+                    {
+                        title: "AI 长视频内容处理方案成熟，成本与效率取得平衡",
+                        content: "社群集中探讨了如何高效、低成本地处理3小时以上的长视频。最佳实践是先分离并处理音频，或使用专门的音视频工具。",
+                        keyData: "一个3.5G视频花费约$10",
+                        tools: "通义听悟、飞书妙计、Faster-Whisper"
+                    },
+                    {
+                        title: "AI Agent 与工作流应用爆发，从个人提效到重塑组织",
+                        content: "从个人利用 Gemini 将会议录音自动生成网站，到企业 CEO 利用40多个AI Agent搭建自动化营销团队。",
+                        keyData: "Relay.app CEO 用 40个 AI Agent 替代了 5人的营销团队",
+                        insight: "这不是在替代人，而是在消除不创造价值的组织'卡路里'"
+                    }
+                ],
+                tools: [
+                    {
+                        name: "Sparkraft.io",
+                        description: "帮助用户快速生成高质量产品Prompt的工具",
+                        highlight: "让 Cursor 或 v0 能"一次性"生成更好的MVP"
+                    },
+                    {
+                        name: "Higgsfield",
+                        description: "图像与视频编辑工具，能任意更改图像中人物的服装、发型等",
+                        highlight: "提供强大的可控性"
+                    }
+                ],
+                qa: [
+                    {
+                        question: "AI 生成内容的网站，申请支付渠道为何屡次被拒？",
+                        answer: "支付平台对AI生成内容（AIGC）业务的风险审查非常严格，尤其是纯图片生成类网站，因之前被滥用，已被列为高风险类别。"
+                    },
+                    {
+                        question: "项目应该如何选择部署方案？Vercel 还是自建服务器？",
+                        answer: "服务器+API总成本应控制在利润的30%以内，优秀线是10-20%。不要只考虑部署成本，更要考虑运维成本。"
+                    }
+                ],
+                risks: [
+                    "AI 账户封禁风险：Claude Code 和 Cursor 对IP环境要求严格",
+                    "支付网关审核风险：AIGC产品申请国际支付网关面临高门槛",
+                    "中转服务风险：存在账号隐私泄露、服务不稳定风险"
+                ]
+            }
+        };
+        
+        // 当前选中的日期
+        let currentDate = "2025-07-07";
+        
+        // 初始化
+        function init() {
+            console.log('初始化开始');
+            try {
+                generateDatePicker();
+                console.log('日期选择器生成完成');
+                loadReport(currentDate);
+                console.log('报告加载完成');
+                setupNavigation();
+                console.log('导航设置完成');
+            } catch (error) {
+                console.error('初始化错误:', error);
+                document.getElementById('mainContent').innerHTML = '<div class="section"><p style="color: red;">加载出错: ' + error.message + '</p></div>';
+            }
+        }
+        
+        // 生成日期选择器
+        function generateDatePicker() {
+            const datePicker = document.getElementById('datePicker');
+            const dates = Object.keys(mockData);
+            
+            dates.forEach((date, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'date-pill';
+                btn.textContent = formatDate(date);
+                btn.dataset.date = date;
+                
+                if (index === 0) {
+                    btn.classList.add('active');
+                }
+                
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.date-pill').forEach(p => p.classList.remove('active'));
+                    btn.classList.add('active');
+                    loadReport(date);
+                });
+                
+                datePicker.appendChild(btn);
+            });
+        }
+        
+        // 格式化日期
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return `${date.getMonth() + 1}月${date.getDate()}日`;
+        }
+        
+        // 加载报告
+        function loadReport(date) {
+            const data = mockData[date];
+            if (!data) return;
+            
+            currentDate = date;
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = '';
+            
+            // 今日要点
+            const highlightsSection = createSection('highlights', '📌', '今日要点');
+            const highlightsList = document.createElement('div');
+            highlightsList.className = 'highlights-list';
+            
+            data.highlights.forEach((highlight, index) => {
+                const item = document.createElement('div');
+                item.className = 'highlight-item';
+                item.innerHTML = `
+                    <span class="highlight-bullet">•</span>
+                    <span>${highlight}</span>
+                `;
+                highlightsList.appendChild(item);
+            });
+            
+            highlightsSection.appendChild(highlightsList);
+            mainContent.appendChild(highlightsSection);
+            
+            // 热门话题
+            const hotSection = createSection('hot-topics', '🔥', '热门话题 (TOP 3)');
+            const hotGrid = document.createElement('div');
+            hotGrid.className = 'hot-topics-grid';
+            
+            data.hotTopics.forEach((topic, index) => {
+                const card = document.createElement('div');
+                card.className = 'hot-topic-card';
+                card.innerHTML = `
+                    <div class="hot-topic-header">
+                        <div class="hot-topic-number">${index + 1}</div>
+                        <h3 class="hot-topic-title">${topic.title}</h3>
+                    </div>
+                    <p class="hot-topic-content">${topic.content}</p>
+                    <div class="hot-topic-meta">
+                        ${topic.keyData ? `<span class="hot-topic-meta-item">📊 ${topic.keyData}</span>` : ''}
+                        ${topic.source ? `<span class="hot-topic-meta-item">💬 ${topic.source}</span>` : ''}
+                        ${topic.tools ? `<span class="hot-topic-meta-item">🛠 ${topic.tools}</span>` : ''}
+                    </div>
+                `;
+                hotGrid.appendChild(card);
+            });
+            
+            hotSection.appendChild(hotGrid);
+            mainContent.appendChild(hotSection);
+            
+            // 工具情报
+            const toolsSection = createSection('tools', '🛠', '工具情报');
+            const toolsList = document.createElement('div');
+            toolsList.className = 'tools-list';
+            
+            data.tools.forEach(tool => {
+                const item = document.createElement('div');
+                item.className = 'tool-item';
+                item.innerHTML = `
+                    <div class="tool-icon">🔧</div>
+                    <div class="tool-content">
+                        <h4 class="tool-name">${tool.name} <span class="tag tag-new">新工具</span></h4>
+                        <p class="tool-description">${tool.description}</p>
+                        ${tool.highlight ? `<p class="tool-description"><strong>亮点：</strong>${tool.highlight}</p>` : ''}
+                    </div>
+                `;
+                toolsList.appendChild(item);
+            });
+            
+            toolsSection.appendChild(toolsList);
+            mainContent.appendChild(toolsSection);
+            
+            // 问答精选
+            const qaSection = createSection('qa', '💬', '问答精选');
+            const qaList = document.createElement('div');
+            qaList.className = 'qa-list';
+            
+            data.qa.forEach(qa => {
+                const item = document.createElement('div');
+                item.className = 'qa-item';
+                item.innerHTML = `
+                    <div class="qa-question" onclick="this.parentElement.classList.toggle('expanded')">
+                        <span>${qa.question}</span>
+                        <span class="qa-toggle">▼</span>
+                    </div>
+                    <div class="qa-answer">${qa.answer}</div>
+                `;
+                qaList.appendChild(item);
+            });
+            
+            qaSection.appendChild(qaList);
+            mainContent.appendChild(qaSection);
+            
+            // 风险提醒
+            if (data.risks && data.risks.length > 0) {
+                const riskSection = createSection('risks', '🚨', '风险提醒');
+                data.risks.forEach(risk => {
+                    const item = document.createElement('div');
+                    item.className = 'risk-item';
+                    item.innerHTML = `
+                        <span class="risk-icon">⚠️</span>
+                        <span class="risk-content">${risk}</span>
+                    `;
+                    riskSection.appendChild(item);
+                });
+                mainContent.appendChild(riskSection);
+            }
+        }
+        
+        // 创建板块
+        function createSection(id, icon, title) {
+            const section = document.createElement('section');
+            section.className = 'section';
+            section.id = id;
+            
+            const header = document.createElement('div');
+            header.className = 'section-header';
+            header.innerHTML = `
+                <span class="section-icon">${icon}</span>
+                <h2 class="section-title">${title}</h2>
+            `;
+            
+            section.appendChild(header);
+            return section;
+        }
+        
+        // 设置导航
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navItems.forEach(n => n.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    const targetId = item.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+            
+            // 滚动监听
+            window.addEventListener('scroll', () => {
+                const scrollPosition = window.scrollY + 100;
+                
+                navItems.forEach(item => {
+                    const targetId = item.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        const { top, bottom } = targetElement.getBoundingClientRect();
+                        const elementTop = top + window.scrollY;
+                        const elementBottom = bottom + window.scrollY;
+                        
+                        if (scrollPosition >= elementTop && scrollPosition < elementBottom) {
+                            navItems.forEach(n => n.classList.remove('active'));
+                            item.classList.add('active');
+                        }
+                    }
+                });
+            });
+        }
+        
+        // 启动
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // 如果直接打开文件，立即初始化
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            init();
+        }
+    </script>
+</body>
+</html>

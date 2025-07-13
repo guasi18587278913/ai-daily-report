@@ -1,0 +1,20 @@
+在 deploy-files 文件夹中执行以下命令：
+
+# 1. 初始化Git仓库
+git init
+
+# 2. 添加所有文件
+git add .
+
+# 3. 创建首次提交
+git commit -m "初始化AI日报项目"
+
+# 4. 连接到你的GitHub仓库
+git remote add origin https://github.com/guasi18587278913/ai-daily-report.git
+
+# 5. 推送到GitHub
+git push -u origin main
+
+# 如果推送失败，可能需要先拉取：
+# git pull origin main --allow-unrelated-histories
+# git push -u origin main

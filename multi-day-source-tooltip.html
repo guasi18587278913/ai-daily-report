@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日报 - 多日浏览</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Segoe UI, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* 日期选择器样式 */
+        .date-selector {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 107, 53, 0.3);
+            padding: 1rem 0;
+        }
+        
+        .date-tabs {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0 1rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .date-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .date-tab {
+            flex-shrink: 0;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .date-tab:hover {
+            border-color: rgba(255, 107, 53, 0.5);
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .date-tab.active {
+            background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
+            border-color: #FF6B35;
+            color: #000000;
+            font-weight: bold;
+        }
+        
+        /* Bento Grid 样式 */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1rem;
+            padding: 2rem 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .bento-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bento-item:hover {
+            border-color: rgba(255, 107, 53, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.2);
+        }
+        
+        /* 来源信息提示框样式 */
+        .source-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 30, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 107, 53, 0.5);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        }
+        
+        .source-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(255, 107, 53, 0.5);
+        }
+        
+        .has-source {
+            position: relative;
+            cursor: help;
+            padding-right: 1.25rem;
+        }
+        
+        .source-indicator {
+            display: inline-block;
+            font-size: 0.75rem;
+            color: rgba(255, 107, 53, 0.6);
+            margin-left: 0.35rem;
+            transition: all 0.3s ease;
+            vertical-align: baseline;
+            opacity: 0.8;
+        }
+        
+        .has-source:hover .source-indicator {
+            color: #FF6B35;
+            transform: scale(1.2);
+        }
+        
+        .has-source:hover .source-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* 内容列表样式 */
+        .content-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .content-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        .content-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #FF6B35;
+            font-weight: bold;
+        }
+        
+        /* 引用块样式 */
+        .quote-block {
+            border-left: 3px solid #FF6B35;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+        
+        .quote-author {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+        
+        /* 工具卡片样式 */
+        .tool-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .tool-card:hover {
+            background: rgba(255, 107, 53, 0.1);
+            border-color: rgba(255, 107, 53, 0.5);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+                padding: 1rem 0.5rem;
+            }
+            
+            .source-tooltip {
+                left: 1rem;
+                right: 1rem;
+                transform: none;
+                white-space: normal;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 日期选择器 -->
+    <div class="date-selector">
+        <div class="date-tabs" id="dateTabs">
+            <!-- 日期标签将通过JavaScript动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 内容容器 -->
+    <div id="contentContainer">
+        <!-- 内容将通过JavaScript动态生成 -->
+    </div>
+    
+    <script>
+        // 日报数据
+        const dailyReports = {};
+        
+        // 加载JSON数据
+        async function loadDailyData() {
+            try {
+                // 加载索引文件
+                const indexResponse = await fetch('deploy-files/data/index.json');
+                const indexData = await indexResponse.json();
+                
+                // 加载每个日期的数据
+                for (const report of indexData.reports) {
+                    const dataResponse = await fetch(`deploy-files/data/${report.date}.json`);
+                    const data = await dataResponse.json();
+                    dailyReports[report.date] = data;
+                }
+                
+                // 初始化UI
+                initializeDateTabs();
+                
+                // 显示最新日期的内容
+                const latestDate = indexData.reports[indexData.reports.length - 1].date;
+                showDateContent(latestDate);
+                
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                document.getElementById('contentContainer').innerHTML = 
+                    '<div class="text-center p-8">加载数据失败，请刷新页面重试</div>';
+            }
+        }
+        
+        // 初始化日期标签
+        function initializeDateTabs() {
+            const tabsContainer = document.getElementById('dateTabs');
+            const dates = Object.keys(dailyReports).sort().reverse();
+            
+            dates.forEach(date => {
+                const report = dailyReports[date];
+                const tab = document.createElement('div');
+                tab.className = 'date-tab';
+                tab.dataset.date = date;
+                tab.innerHTML = `
+                    <div class="date-tab-date">${date.substring(5)}</div>
+                    <div class="date-tab-day">${report.dayOfWeek}</div>
+                `;
+                tab.addEventListener('click', () => showDateContent(date));
+                tabsContainer.appendChild(tab);
+            });
+        }
+        
+        // 显示指定日期的内容
+        function showDateContent(date) {
+            // 更新标签激活状态
+            document.querySelectorAll('.date-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.date === date);
+            });
+            
+            // 获取数据
+            const data = dailyReports[date];
+            if (!data) return;
+            
+            // 渲染内容
+            const container = document.getElementById('contentContainer');
+            container.innerHTML = renderDailyContent(data);
+        }
+        
+        // 渲染日报内容
+        function renderDailyContent(data) {
+            let html = '<div class="bento-grid">';
+            
+            // 渲染每个部分
+            for (const [sectionTitle, section] of Object.entries(data.sections)) {
+                html += renderSection(sectionTitle, section);
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        // 渲染单个部分
+        function renderSection(title, section) {
+            const parsed = section.parsed || [];
+            let content = '';
+            
+            parsed.forEach(item => {
+                if (item.type === 'list') {
+                    content += renderListItem(item);
+                } else if (item.type === 'paragraph') {
+                    content += renderParagraph(item);
+                }
+            });
+            
+            // 根据标题确定网格大小
+            let gridClass = 'col-span-12 md:col-span-6 lg:col-span-4';
+            if (title.includes('今日要点')) {
+                gridClass = 'col-span-12';
+            } else if (title.includes('热门话题')) {
+                gridClass = 'col-span-12 lg:col-span-8';
+            }
+            
+            return `
+                <div class="bento-item ${gridClass}">
+                    <h2 class="text-xl font-bold mb-4">${title}</h2>
+                    <div class="content">
+                        ${content}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 渲染列表项
+        function renderListItem(item) {
+            const sourceHtml = item.source ? 
+                `<span class="source-tooltip">
+                    <i class="fas fa-users"></i> ${item.source.group}
+                    ${item.source.author ? `<br><i class="fas fa-user"></i> ${item.source.author}` : ''}
+                </span>` : '';
+            
+            const hasSourceClass = item.source ? 'has-source' : '';
+            
+            return `
+                <div class="content-list">
+                    <li class="${hasSourceClass}">
+                        ${item.text}
+                        ${item.source ? '<span class="source-indicator">📍</span>' : ''}
+                        ${sourceHtml}
+                    </li>
+                </div>
+            `;
+        }
+        
+        // 渲染段落
+        function renderParagraph(item) {
+            const sourceHtml = item.source ? 
+                `<span class="source-tooltip">
+                    <i class="fas fa-users"></i> ${item.source.group}
+                    ${item.source.author ? `<br><i class="fas fa-user"></i> ${item.source.author}` : ''}
+                </span>` : '';
+            
+            const hasSourceClass = item.source ? 'has-source' : '';
+            
+            return `
+                <p class="${hasSourceClass} mb-4">
+                    ${item.text}
+                    ${item.source ? '<span class="source-indicator">📍</span>' : ''}
+                    ${sourceHtml}
+                </p>
+            `;
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', loadDailyData);
+    </script>
+</body>
+</html>

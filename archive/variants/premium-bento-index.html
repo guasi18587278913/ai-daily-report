@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日报 - Premium Edition</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Segoe UI, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* 日期选择器 - 极简设计 */
+        .date-selector {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 100;
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 0.5rem;
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+        }
+        
+        .date-tab {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .date-tab:hover {
+            transform: scale(1.1);
+            background: rgba(255, 107, 53, 0.2);
+            border-color: rgba(255, 107, 53, 0.5);
+        }
+        
+        .date-tab.active {
+            background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
+            border: none;
+            color: #000000;
+            font-weight: bold;
+            transform: scale(1.15);
+        }
+        
+        .date-tab-date {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        /* 主容器 */
+        .main-container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        .daily-content {
+            display: none;
+            position: relative;
+        }
+        
+        .daily-content.active {
+            display: block;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { 
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* 高级Bento Grid布局 */
+        .bento-container {
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(120px, auto);
+            gap: 1.5rem;
+            margin-bottom: 8rem;
+        }
+        
+        /* 通用Bento项目样式 */
+        .bento-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            border-radius: 2rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+        
+        .bento-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.15) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+        
+        .bento-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(255, 107, 53, 0.6);
+            box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3);
+        }
+        
+        .bento-item:hover::before {
+            opacity: 1;
+        }
+        
+        /* 特殊网格项目 */
+        .hero-block {
+            grid-column: span 12;
+            grid-row: span 2;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 165, 0, 0.05) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4rem;
+        }
+        
+        .highlight-block {
+            grid-column: span 4;
+            grid-row: span 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .topic-block {
+            grid-column: span 8;
+            grid-row: span 3;
+            max-height: 500px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 107, 53, 0.3) transparent;
+        }
+        
+        .topic-block::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .topic-block::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .topic-block::-webkit-scrollbar-thumb {
+            background: rgba(255, 107, 53, 0.3);
+            border-radius: 3px;
+        }
+        
+        .chart-block {
+            grid-column: span 4;
+            grid-row: span 3;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tool-block {
+            grid-column: span 6;
+            grid-row: span 3;
+        }
+        
+        .insight-block {
+            grid-column: span 6;
+            grid-row: span 3;
+        }
+        
+        .industry-block {
+            grid-column: span 12;
+            grid-row: span 2;
+        }
+        
+        .qa-block {
+            grid-column: span 12;
+            grid-row: span 2;
+        }
+        
+        /* 标题样式 */
+        .mega-title {
+            font-size: clamp(4rem, 10vw, 8rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.03em;
+            line-height: 0.85;
+            margin-bottom: 1rem;
+        }
+        
+        .section-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-title {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+        
+        /* 数字高亮 */
+        .big-number {
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 0.8;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* 内容文本 */
+        .content-text {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+        
+        .content-text strong {
+            color: #FF6B35;
+            font-weight: 600;
+        }
+        
+        /* 交互元素 */
+        .expand-btn {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 107, 53, 0.2);
+            border: 1px solid rgba(255, 107, 53, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #FF6B35;
+        }
+        
+        .expand-btn:hover {
+            background: rgba(255, 107, 53, 0.4);
+            transform: scale(1.1);
+        }
+        
+        /* 详细内容面板 */
+        .detail-panel {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 600px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 107, 53, 0.3);
+            transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 200;
+            overflow-y: auto;
+            padding: 3rem 2rem;
+        }
+        
+        .detail-panel.active {
+            right: 0;
+        }
+        
+        .close-panel {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #ffffff;
+        }
+        
+        .close-panel:hover {
+            background: rgba(255, 107, 53, 0.2);
+            border-color: rgba(255, 107, 53, 0.5);
+            transform: rotate(90deg);
+        }
+        
+        /* 引用框 */
+        .quote-highlight {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 165, 0, 0.05) 100%);
+            border-left: 4px solid #FF6B35;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0.5rem;
+            position: relative;
+            font-style: italic;
+        }
+        
+        .quote-highlight::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            font-size: 3rem;
+            color: rgba(255, 107, 53, 0.3);
+            font-family: serif;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .bento-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+            
+            .hero-block,
+            .industry-block,
+            .qa-block {
+                grid-column: span 6;
+            }
+            
+            .highlight-block,
+            .chart-block {
+                grid-column: span 2;
+            }
+            
+            .topic-block {
+                grid-column: span 4;
+            }
+            
+            .tool-block,
+            .insight-block {
+                grid-column: span 3;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .date-selector {
+                top: 1rem;
+                right: 1rem;
+            }
+            
+            .bento-container {
+                padding: 1rem;
+            }
+            
+            .bento-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .hero-block,
+            .highlight-block,
+            .topic-block,
+            .chart-block,
+            .tool-block,
+            .insight-block,
+            .industry-block,
+            .qa-block {
+                grid-column: span 1;
+            }
+            
+            .detail-panel {
+                width: 100%;
+            }
+        }
+        
+        /* 装饰元素 */
+        .glow-orb {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.2) 0%, transparent 70%);
+            filter: blur(100px);
+            pointer-events: none;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        .glow-orb:nth-child(1) {
+            top: -300px;
+            left: -300px;
+            animation-delay: 0s;
+        }
+        
+        .glow-orb:nth-child(2) {
+            bottom: -300px;
+            right: -300px;
+            animation-delay: 10s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, -100px) scale(1.1); }
+            66% { transform: translate(-100px, 100px) scale(0.9); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景装饰 -->
+    <div class="glow-orb"></div>
+    <div class="glow-orb"></div>
+    
+    <!-- 日期选择器 -->
+    <div class="date-selector">
+        <div class="date-tab active" data-date="2025-07-09">
+            <div class="date-tab-date">09</div>
+        </div>
+        <div class="date-tab" data-date="2025-07-08">
+            <div class="date-tab-date">08</div>
+        </div>
+        <div class="date-tab" data-date="2025-07-07">
+            <div class="date-tab-date">07</div>
+        </div>
+    </div>
+    
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 2025-07-09 内容 -->
+        <div class="daily-content active" id="content-2025-07-09">
+            <div class="bento-container">
+                <div class="bento-grid">
+                    <!-- Hero -->
+                    <div class="bento-item hero-block">
+                        <div class="section-label">DAILY INTELLIGENCE REPORT</div>
+                        <h1 class="mega-title">AI日报</h1>
+                        <div style="margin: 2rem 0;">
+                            <span style="font-size: 2rem; font-weight: 300; color: rgba(255, 255, 255, 0.9);">2025.07.09-10</span>
+                            <span style="font-size: 1rem; color: rgba(255, 255, 255, 0.5); margin-left: 1rem;">周三至周四</span>
+                        </div>
+                        <p style="font-size: 1.2rem; color: rgba(255, 255, 255, 0.7); max-width: 800px; margin: 0 auto; line-height: 1.5;">
+                            AI编程工具大洗牌，山海经内容爆火，用户成AI游牧民族
+                        </p>
+                    </div>
+                    
+                    <!-- 三大要点 -->
+                    <div class="bento-item highlight-block" data-content="highlight1">
+                        <div>
+                            <div class="big-number">01</div>
+                            <div class="section-label">HIGHLIGHT</div>
+                            <h3 style="font-size: 1.25rem; font-weight: 700; color: #FF6B35; margin: 1rem 0;">AI编程工具大洗牌</h3>
+                            <p class="content-text">Cursor因性能下降失宠，Augment崛起成为开发者新宠</p>
+                        </div>
+                        <div class="expand-btn">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bento-item highlight-block" data-content="highlight2">
+                        <div>
+                            <div class="big-number">02</div>
+                            <div class="section-label">HIGHLIGHT</div>
+                            <h3 style="font-size: 1.25rem; font-weight: 700; color: #FF6B35; margin: 1rem 0;">内容创作新风口</h3>
+                            <p class="content-text">山海经题材在YouTube创造数亿播放量的流量奇迹</p>
+                        </div>
+                        <div class="expand-btn">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bento-item highlight-block" data-content="highlight3">
+                        <div>
+                            <div class="big-number">03</div>
+                            <div class="section-label">HIGHLIGHT</div>
+                            <h3 style="font-size: 1.25rem; font-weight: 700; color: #FF6B35; margin: 1rem 0;">AI游牧民族崛起</h3>
+                            <p class="content-text">用户忠诚度下降，垂直领域小而美工具迎来机会</p>
+                        </div>
+                        <div class="expand-btn">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 热门话题 -->
+                    <div class="bento-item topic-block" data-content="topics">
+                        <div class="section-label">HOT TOPICS</div>
+                        <h2 class="section-title">热门话题</h2>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="font-size: 1.25rem; color: #FF6B35; margin-bottom: 1rem;">AI编程IDE之战：Cursor颓势，Augment崛起</h3>
+                            <p class="content-text">大量开发者反馈，Cursor近期更新后"变笨变慢"，命令卡顿问题频发。备受推崇的替代品Augment成为新宠。</p>
+                            <div class="quote-highlight">
+                                "今天试用了augment，感觉比近期拉胯的cursor好多了，上下文到位，也不会瞎改，测试比较完善。"
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="font-size: 1.25rem; color: #FF6B35; margin-bottom: 1rem;">YouTube的"山海经"内容淘金热</h3>
+                            <p class="content-text">"山海经"IP正成为顶级流量密码。创作者将山海经与ASMR、DJ蹦迪、KPOP等形式融合，创造千万乃至上亿播放。</p>
+                        </div>
+                        
+                        <div class="expand-btn">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 数据图表 -->
+                    <div class="bento-item chart-block">
+                        <div class="section-label">DATA VISUALIZATION</div>
+                        <h3 class="section-title" style="font-size: 1.5rem;">开发者工具使用趋势</h3>
+                        <div style="flex: 1; position: relative; margin-top: 2rem;">
+                            <canvas id="toolsChart-2025-07-09"></canvas>
+                        </div>
+                        <div style="margin-top: 2rem; text-align: center;">
+                            <span style="color: #FF6B35; font-size: 2rem; font-weight: bold;">35%</span>
+                            <span style="color: rgba(255, 255, 255, 0.6); margin-left: 0.5rem;">开发者转向Augment</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 工具情报 -->
+                    <div class="bento-item tool-block" data-content="tools">
+                        <div class="section-label">TOOL INTELLIGENCE</div>
+                        <h2 class="section-title">工具情报</h2>
+                        
+                        <div style="display: grid; gap: 1.5rem; margin-top: 2rem;">
+                            <div>
+                                <h4 style="color: #FF6B35; font-weight: 600; margin-bottom: 0.5rem;">ccundo</h4>
+                                <p class="content-text" style="font-size: 0.85rem;">解决Claude Code无法便捷撤销/重做操作的痛点</p>
+                            </div>
+                            <div>
+                                <h4 style="color: #FF6B35; font-weight: 600; margin-bottom: 0.5rem;">Pokee.ai</h4>
+                                <p class="content-text" style="font-size: 0.85rem;">工作流智能体，自动分发内容到多平台</p>
+                            </div>
+                            <div>
+                                <h4 style="color: #FF6B35; font-weight: 600; margin-bottom: 0.5rem;">FLUX-Text</h4>
+                                <p class="content-text" style="font-size: 0.85rem;">高德地图开源，精准修改图片中文字符</p>
+                            </div>
+                        </div>
+                        
+                        <div class="expand-btn">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 实战干货 -->
+                    <div class="bento-item insight-block" data-content="insights">
+                        <div class="section-label">PRACTICAL INSIGHTS</div>
+                        <h2 class="section-title">实战干货</h2>
+                        
+                        <div style="margin-top: 2rem;">
+                            <h4 style="color: #FF6B35; font-weight: 600; margin-bottom: 1rem;">Vercel v0项目迁移四步法</h4>
+                            <ol style="list-style: none; padding: 0;">
+                                <li style="margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.8);">
+                                    <span style="color: #FF6B35; font-weight: bold; margin-right: 0.5rem;">1.</span>
+                                    准备：项目并排放置
+                                </li>
+                                <li style="margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.8);">
+                                    <span style="color: #FF6B35; font-weight: bold; margin-right: 0.5rem;">2.</span>
+                                    分析：AI输出迁移清单
+                                </li>
+                                <li style="margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.8);">
+                                    <span style="color: #FF6B35; font-weight: bold; margin-right: 0.5rem;">3.</span>
+                                    迁移：人工迁移核心组件
+                                </li>
+                                <li style="margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.8);">
+                                    <span style="color: #FF6B35; font-weight: bold; margin-right: 0.5rem;">4.</span>
+                                    验证：AI检查路径依赖
+                                </li>
+                            </ol>
+                        </div>
+                        
+                        <div class="expand-btn">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 行业动态 -->
+                    <div class="bento-item industry-block" data-content="industry">
+                        <div class="section-label">INDUSTRY UPDATES</div>
+                        <h2 class="section-title">行业动态</h2>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                            <div>
+                                <h4 style="color: #FF6B35; margin-bottom: 1rem;">大公司动态</h4>
+                                <ul style="list-style: none; padding: 0;">
+                                    <li style="margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.8);">
+                                        <strong style="color: #FFA500;">智元机器人：</strong>传闻收购科创板公司
+                                    </li>
+                                    <li style="margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.8);">
+                                        <strong style="color: #FFA500;">xAI：</strong>收购发电厂供应数据中心
+                                    </li>
+                                </ul>
+                            </div>
+                            <div style="text-align: center;">
+                                <div class="big-number">$90B</div>
+                                <p class="content-text">CoreWeave收购Core Scientific</p>
+                            </div>
+                            <div>
+                                <h4 style="color: #FF6B35; margin-bottom: 1rem;">新产品发布</h4>
+                                <ul style="list-style: none; padding: 0;">
+                                    <li style="margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.8);">
+                                        <strong style="color: #FFA500;">Perplexity Comet：</strong>AI浏览器
+                                    </li>
+                                    <li style="margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.8);">
+                                        <strong style="color: #FFA500;">Base44：</strong>全栈开发平台
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="expand-btn">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 问答精选 -->
+                    <div class="bento-item qa-block" data-content="qa">
+                        <div class="section-label">Q&A HIGHLIGHTS</div>
+                        <h2 class="section-title">问答精选</h2>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                            <div>
+                                <h4 style="color: #FF6B35; margin-bottom: 1rem;">Q: 编程新手选Cursor还是Claude Code？</h4>
+                                <p class="content-text"><strong>A: 绝对是Cursor。</strong>它拥有成熟的图形界面，对新手极其友好。</p>
+                            </div>
+                            <div>
+                                <h4 style="color: #FF6B35; margin-bottom: 1rem;">Q: 如何避免YouTube内容重复被暂停？</h4>
+                                <p class="content-text"><strong>A: 关键在于"有效二创"。</strong>必须在视觉和听觉上做出显著差异。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="expand-btn">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 其他日期内容（简化版，结构相同） -->
+        <div class="daily-content" id="content-2025-07-08">
+            <div class="bento-container">
+                <div class="bento-grid">
+                    <!-- Hero -->
+                    <div class="bento-item hero-block">
+                        <div class="section-label">DAILY INTELLIGENCE REPORT</div>
+                        <h1 class="mega-title">AI日报</h1>
+                        <div style="margin: 2rem 0;">
+                            <span style="font-size: 2rem; font-weight: 300; color: rgba(255, 255, 255, 0.9);">2025.07.08</span>
+                            <span style="font-size: 1rem; color: rgba(255, 255, 255, 0.5); margin-left: 1rem;">周二</span>
+                        </div>
+                        <p style="font-size: 1.2rem; color: rgba(255, 255, 255, 0.7); max-width: 800px; margin: 0 auto; line-height: 1.5;">
+                            AI Agent商业化闭环打通，独立开发者变现路径清晰
+                        </p>
+                    </div>
+                    
+                    <!-- 内容块继续... -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="daily-content" id="content-2025-07-07">
+            <div class="bento-container">
+                <div class="bento-grid">
+                    <!-- Hero -->
+                    <div class="bento-item hero-block">
+                        <div class="section-label">DAILY INTELLIGENCE REPORT</div>
+                        <h1 class="mega-title">AI日报</h1>
+                        <div style="margin: 2rem 0;">
+                            <span style="font-size: 2rem; font-weight: 300; color: rgba(255, 255, 255, 0.9);">2025.07.07</span>
+                            <span style="font-size: 1rem; color: rgba(255, 255, 255, 0.5); margin-left: 1rem;">周一</span>
+                        </div>
+                        <p style="font-size: 1.2rem; color: rgba(255, 255, 255, 0.7); max-width: 800px; margin: 0 auto; line-height: 1.5;">
+                            Cursor引发信任危机，AI Agent重塑组织架构
+                        </p>
+                    </div>
+                    
+                    <!-- 内容块继续... -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 详细内容面板 -->
+    <div class="detail-panel" id="detailPanel">
+        <div class="close-panel" onclick="closeDetail()">
+            <i class="fas fa-times"></i>
+        </div>
+        <div id="panelContent">
+            <!-- 动态内容 -->
+        </div>
+    </div>
+    
+    <script>
+        // 日期切换
+        document.querySelectorAll('.date-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.date-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.daily-content').forEach(c => c.classList.remove('active'));
+                
+                this.classList.add('active');
+                const targetDate = this.dataset.date;
+                const targetContent = document.getElementById(`content-${targetDate}`);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                    initChart(targetDate);
+                }
+            });
+        });
+        
+        // 展开详情
+        document.querySelectorAll('.expand-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const contentType = this.parentElement.dataset.content;
+                if (contentType) {
+                    showDetail(contentType);
+                }
+            });
+        });
+        
+        // 点击卡片也可以展开
+        document.querySelectorAll('.bento-item[data-content]').forEach(item => {
+            item.addEventListener('click', function() {
+                const contentType = this.dataset.content;
+                if (contentType) {
+                    showDetail(contentType);
+                }
+            });
+        });
+        
+        // 显示详情面板
+        function showDetail(contentType) {
+            const panel = document.getElementById('detailPanel');
+            const content = document.getElementById('panelContent');
+            
+            // 获取当前激活的日期
+            const activeTab = document.querySelector('.date-tab.active');
+            const currentDate = activeTab ? activeTab.dataset.date : '2025-07-09';
+            
+            // 根据日期和内容类型加载不同的详细内容
+            content.innerHTML = getDetailContent(contentType, currentDate);
+            panel.classList.add('active');
+        }
+        
+        // 关闭详情面板
+        function closeDetail() {
+            document.getElementById('detailPanel').classList.remove('active');
+        }
+        
+        // 获取详细内容
+        function getDetailContent(type, date) {
+            // 根据日期返回不同的内容
+            if (date === '2025-07-09') {
+                return getDetailContent0709(type);
+            } else if (date === '2025-07-08') {
+                return getDetailContent0708(type);
+            } else if (date === '2025-07-07') {
+                return getDetailContent0707(type);
+            }
+            return '<p>内容加载中...</p>';
+        }
+        
+        // 07-09的详细内容
+        function getDetailContent0709(type) {
+            const contents = {
+                highlight1: `
+                    <div class="section-label">HIGHLIGHT DETAIL</div>
+                    <h2 class="section-title">AI编程工具大洗牌</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <p>Cursor因性能下降及定价调整，用户大量"用脚投票"转向Augment。Augment虽基于Claude，但因其出色的体验和稳定性备受好评，凸显"好用"比"能用"更重要。</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1rem;">核心问题</h3>
+                        <ul style="line-height: 2;">
+                            <li>Cursor近期更新后"变笨变慢"</li>
+                            <li>命令卡顿问题频发</li>
+                            <li>新计费模式引流失潮</li>
+                        </ul>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1rem;">替代方案</h3>
+                        <p><strong>Augment</strong>：修改过程透明、上下文处理精准</p>
+                        <p><strong>Claude Code</strong>：功能强大，但命令行界面对新手仍是门槛</p>
+                        
+                        <div class="quote-highlight">
+                            "今天试用了augment，感觉比近期拉胯的cursor好多了，上下文到位，也不会瞎改，测试比较完善。"
+                        </div>
+                    </div>
+                `,
+                highlight2: `
+                    <div class="section-label">HIGHLIGHT DETAIL</div>
+                    <h2 class="section-title">内容创作新风口</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <p>"山海经"题材在YouTube爆火。结合ASMR、K-POP、惊悚等元素，"山海经"主题正以各种形式席卷短、长视频，创造了数亿播放量的流量奇迹，成为可验证的爆款公式。</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1rem;">流量密码解析</h3>
+                        <ul style="line-height: 2;">
+                            <li><strong>山海经 + ASMR</strong>：20天视频达5000万播放量</li>
+                            <li><strong>山海经 + DJ蹦迪</strong>：跨界融合创造病毒式传播</li>
+                            <li><strong>山海经 + KPOP MV</strong>：东西方文化碰撞的新形式</li>
+                            <li><strong>山海经 + 惊悚故事</strong>：神秘感与恐怖元素完美结合</li>
+                        </ul>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1rem;">成功要素</h3>
+                        <p><strong>经典IP + 跨界创新</strong>：利用公版IP避开版权问题，结合当下流行元素创新表达</p>
+                        <p><strong>多平台适配</strong>：无论长视频还是Shorts都有爆款潜力</p>
+                        
+                        <div class="quote-highlight">
+                            "veo3的ASMR没爆，倒是山海经ASMR先爆了，20天以前的视频5000万，居然之前没发现。"
+                        </div>
+                    </div>
+                `,
+                highlight3: `
+                    <div class="section-label">HIGHLIGHT DETAIL</div>
+                    <h2 class="section-title">用户成"AI游牧民族"</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <p>社群热议观点认为，用户对通用大模型已无忠诚度，正从"全民热议"转向寻找能解决特定问题的"小而美"工具。这为垂直领域的AI应用开发者提供了巨大机会。</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1rem;">用户行为变化</h3>
+                        <ul style="line-height: 2;">
+                            <li>从追求"最强模型"到追求"最适合的工具"</li>
+                            <li>付费意愿从"订阅大模型"转向"为专业工具付费"</li>
+                            <li>使用习惯从"一个工具解决所有"到"多工具组合使用"</li>
+                        </ul>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1rem;">机会洞察</h3>
+                        <p><strong>垂直场景机会</strong>：专注解决特定问题的AI工具更受欢迎</p>
+                        <p><strong>工具组合生态</strong>：提供工具间协作的解决方案</p>
+                        <p><strong>定制化服务</strong>：针对特定行业或职业的AI助手</p>
+                    </div>
+                `,
+                topics: `
+                    <div class="section-label">HOT TOPICS DETAIL</div>
+                    <h2 class="section-title">热门话题完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35; margin-bottom: 1.5rem;">AI编程IDE之战：Cursor颓势，Augment崛起</h3>
+                        <p><strong>核心</strong>：大量开发者反馈，Cursor近期更新后"变笨变慢"，命令卡顿问题频发，且新计费模式引流失潮。备受推崇的替代品Augment，因其修改过程透明、上下文处理精准，成为新宠。Claude Code虽强，但命令行界面对新手仍是门槛。</p>
+                        
+                        <div class="quote-highlight">
+                            "今天试用了augment，感觉比近期拉胯的cursor好多了，上下文到位，也不会瞎改，测试比较完善。"
+                        </div>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1.5rem;">YouTube的"山海经"内容淘金热</h3>
+                        <p><strong>核心</strong>：YouTube"风向标"显示，"山海经"IP正成为顶级流量密码。创作者将山海经与ASMR、DJ蹦迪、惊悚故事、KPOP音乐MV等形式融合，无论是长视频还是Shorts，都诞生了千万乃至上亿播放的爆款。这证明了"经典IP + 跨界创新"模式的巨大潜力。</p>
+                        
+                        <div class="quote-highlight">
+                            "veo3的ASMR没爆，倒是山海经ASMR先爆了，20天以前的视频5000万，居然之前没发现。"
+                        </div>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1.5rem;">内容创作中的"AI味"大讨论</h3>
+                        <p><strong>核心</strong>：生财有术创始人亦仁发帖不鼓励"AI味"内容，引发社群激辩。圈友普遍认为，应抵制的不是AI辅助写作本身，而是缺乏个人思考和验证的"空洞内容"。AI应是提升表达效率的工具，而非掩盖经验缺失的遮羞布。</p>
+                        
+                        <div class="quote-highlight">
+                            "在我看来，所谓的AI味儿就是：用语言的逻辑性，去掩盖内容和经验的缺失。"
+                        </div>
+                    </div>
+                `,
+                tools: `
+                    <div class="section-label">TOOL INTELLIGENCE DETAIL</div>
+                    <h2 class="section-title">工具情报完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35; margin-bottom: 1.5rem;">新发现工具</h3>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h4 style="color: #FFA500; margin-bottom: 0.5rem;">ccundo</h4>
+                            <p>一个GitHub上的命令行工具，专门解决Claude Code无法便捷撤销/重做操作的痛点。免费。</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h4 style="color: #FFA500; margin-bottom: 0.5rem;">Pokee.ai</h4>
+                            <p>一个工作流智能体，能通过单一提示词，自动将内容（含视频）分发到Twitter、LinkedIn、YouTube等多个平台，支持定时发送。</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h4 style="color: #FFA500; margin-bottom: 0.5rem;">Magic Animator</h4>
+                            <p>Figma插件，能一键将静态设计稿转化为动效，并支持导出为Lottie、JSON等格式，极大提升交互Demo制作效率。</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h4 style="color: #FFA500; margin-bottom: 0.5rem;">FLUX-Text</h4>
+                            <p>高德地图开源的图像模型，可精准修改图片中的中文字符，完美解决DALL-E 3、Midjourney等模型中文乱码问题。</p>
+                        </div>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1.5rem;">问题解决</h3>
+                        <div style="background: rgba(255, 107, 53, 0.1); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                            <p><strong>场景</strong>：Supabase多项目部署导致每月账单过高（$100+）。</p>
+                            <p style="margin-top: 1rem;"><strong>解决方案</strong>：</p>
+                            <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                                <li>检查并优化慢SQL查询</li>
+                                <li>将多个项目数据表合并</li>
+                                <li>为不常用项目设置闲时自动休眠</li>
+                                <li>针对高频业务增加缓存（LRUcache）</li>
+                            </ul>
+                            <p style="margin-top: 1rem;"><strong>效果</strong>：显著降低云服务成本。</p>
+                        </div>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1.5rem;">使用技巧</h3>
+                        <ul style="line-height: 2;">
+                            <li><strong>Midjourney</strong>：使用风格代码 --sref 2007748773 可生成极具"设计图纸感"的独特视觉风格，已成新晋网红风格。</li>
+                            <li><strong>Claude Code</strong>：警惕淘宝上的低价中转API，有开发者发现部分商家用DeepSeek等低成本模型冒充Claude，效果差异巨大。</li>
+                            <li><strong>Cursor</strong>：如遇命令卡在"Running terminal command..."，可在聊天界面中止，然后将该命令复制到新终端窗口手动执行。</li>
+                        </ul>
+                    </div>
+                `,
+                insights: `
+                    <div class="section-label">PRACTICAL INSIGHTS DETAIL</div>
+                    <h2 class="section-title">实战干货完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35; margin-bottom: 1.5rem;">场景：将Vercel v0生成的项目高效迁移至标准开发模板</h3>
+                        
+                        <p><strong>方法</strong>：采用"人AI协同四步法"：</p>
+                        <ol style="margin: 1rem 0; padding-left: 1.5rem; line-height: 2;">
+                            <li><strong>准备</strong>：将两个项目并排放置</li>
+                            <li><strong>分析</strong>：让AI先分析结构并输出迁移步骤清单，而非直接操作</li>
+                            <li><strong>迁移</strong>：人手动迁移页面、组件、API，并合并package.json等配置文件</li>
+                            <li><strong>验证</strong>：让AI检查新项目的引用路径、依赖和语法错误，最后再运行</li>
+                        </ol>
+                        
+                        <p><strong>结果</strong>：一套系统化的迁移流程，极大降低出错率，尤其适合编程新手。</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1.5rem;">场景：为YouTube频道寻找未被发掘的流量洼地</h3>
+                        
+                        <p><strong>方法</strong>：<strong>"竖屏打横屏"</strong>策略。寻找在横屏直播领域已验证成功的热门内容（如新闻、游戏、烹饪），将其改造为竖屏直播。由于先行者极少，可以利用平台对竖屏的流量倾斜，精准抢占已有庞大观众基础的赛道。</p>
+                        
+                        <p><strong>结果</strong>：一种低成本、高潜力的策略，快速切入成熟市场并建立差异化优势。</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1.5rem;">场景：打造从电商选品到AI模特图生成的完整工作流</h3>
+                        
+                        <p><strong>方法</strong>：选品可关注小众高利润的虚拟资料（如日本旅游攻略地图在小红书热卖）；实体电商则可利用蘑菇街的weshop或自建ComfyUI/SD工作流，实现AI换装和背景更换，批量生成高质量商品图。</p>
+                        
+                        <div style="background: rgba(255, 107, 53, 0.1); padding: 1.5rem; border-radius: 0.5rem; margin-top: 1rem;">
+                            <p style="font-size: 2rem; font-weight: bold; color: #FF6B35; margin-bottom: 0.5rem;">7.4万单</p>
+                            <p><strong>结果</strong>：一个账号通过纯图文形式在抖音销售童装，累计销量达到这个数字。</p>
+                        </div>
+                    </div>
+                `,
+                industry: `
+                    <div class="section-label">INDUSTRY UPDATES DETAIL</div>
+                    <h2 class="section-title">行业动态完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35; margin-bottom: 1.5rem;">大公司动态</h3>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h4 style="color: #FFA500;">智元机器人 (Genesis)</h4>
+                            <p>传闻将收购一家科创板上市公司。此举被视为AI独角兽探索快速上市和融资的新路径，可能引发行业效仿。</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h4 style="color: #FFA500;">xAI</h4>
+                            <p>被曝正收购一家海外发电厂，为其未来的"百万级GPU"数据中心供电，凸显了AI算力的巨大能源消耗已成为头部玩家的核心壁垒。</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h4 style="color: #FFA500;">华为</h4>
+                            <p>GitHub上出现名为HW-whistleblower的账号，发布针对盘古大模型的质疑，引发行业内对模型自主性的广泛讨论。</p>
+                        </div>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1.5rem;">投融资</h3>
+                        
+                        <div style="background: rgba(255, 107, 53, 0.1); padding: 2rem; border-radius: 0.5rem; text-align: center;">
+                            <p style="font-size: 3rem; font-weight: bold; color: #FF6B35; margin-bottom: 1rem;">$90B</p>
+                            <h4 style="color: #FFA500; margin-bottom: 0.5rem;">CoreWeave & Core Scientific</h4>
+                            <p>AI云服务商CoreWeave宣布以90亿美元全股票交易收购数据中心运营商Core Scientific。AI基础设施领域的"军备竞赛"和垂直整合趋势愈演愈烈。</p>
+                        </div>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1.5rem;">新产品发布</h3>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="color: #FFA500;">Perplexity Comet</h4>
+                            <p>AI搜索公司Perplexity发布新款AI浏览器Comet，仅对付费用户开放。初步反馈显示，其智能体功能演示并不亮眼，市场反应平平。</p>
+                        </div>
+                        
+                        <div>
+                            <h4 style="color: #FFA500;">Base44</h4>
+                            <p>一个"开箱即用"的全栈开发平台，为AI生成的应用预置了数据库、用户管理、分析等功能，旨在帮助开发者轻松地将AI项目扩展为功能完善的商业应用。</p>
+                        </div>
+                    </div>
+                `,
+                qa: `
+                    <div class="section-label">Q&A HIGHLIGHTS DETAIL</div>
+                    <h2 class="section-title">问答精选完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="color: #FF6B35;">Q：我是编程新手，应该从Cursor还是Claude Code开始学习AI编程？</h3>
+                            <div style="background: rgba(255, 107, 53, 0.1); padding: 1.5rem; border-radius: 0.5rem; margin-top: 1rem;">
+                                <p><strong>A：绝对是Cursor。</strong> 它拥有成熟的图形用户界面和产品体验，对新手极其友好。Claude Code目前仍是命令行工具，学习曲线陡峭，更适合有经验的开发者作为"瑞士军刀"使用。</p>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="color: #FF6B35;">Q：做YouTube视频，如何避免因"内容重复"被暂停YPP获利？</h3>
+                            <div style="background: rgba(255, 107, 53, 0.1); padding: 1.5rem; border-radius: 0.5rem; margin-top: 1rem;">
+                                <p><strong>A：关键在于"有效二创"，而非"像素级复刻"。</strong> 即使复刻爆款脚本，也必须在视觉和听觉上做出显著差异：更换核心角色、使用AI工具重新生成画面和配音、调整剪辑节奏。直接使用豆包等风格过于统一的工具出图，风险极高。</p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 style="color: #FF6B35;">Q：Claude Code的API是否可以回退不满意的代码生成？</h3>
+                            <div style="background: rgba(255, 107, 53, 0.1); padding: 1.5rem; border-radius: 0.5rem; margin-top: 1rem;">
+                                <p><strong>A：</strong>原生不支持，但社区已有解决方案。可以使用Git命令进行版本控制，或者使用GitHub上的开源工具ccundo。它提供了undo、redo、preview等命令，能有效管理AI生成的代码版本。</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            };
+            
+            return contents[type] || '<p>内容加载中...</p>';
+        }
+        
+        // 07-08的详细内容
+        function getDetailContent0708(type) {
+            const contents = {
+                highlight1: `
+                    <div class="section-label">HIGHLIGHT DETAIL</div>
+                    <h2 class="section-title">微信支付与支付宝接入大模型</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <p>微信支付宣布接入腾讯元宝，同时字节的Coze平台也出现了官方的支付宝支付插件。这意味着开发者构建的AI Agent（智能体）将能够直接调用支付接口，完成从服务到收款的商业全流程，为AI应用商业化打开了新的想象空间。</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1rem;">关键进展</h3>
+                        <ul style="line-height: 2;">
+                            <li>微信支付推出小程序云支付（MCP）</li>
+                            <li>Coze平台集成支付宝支付插件</li>
+                            <li>AI Agent可直接调用支付接口</li>
+                        </ul>
+                        
+                        <div class="quote-highlight">
+                            "帮实体商家做一个能收钱的智能体，很有想象空间。"
+                        </div>
+                    </div>
+                `,
+                highlight2: `
+                    <div class="section-label">HIGHLIGHT DETAIL</div>
+                    <h2 class="section-title">独立开发者项目ArtCraftAI崭露头角</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <p>社群成员"蘑菇"从为孩子制作学习卡片的个人需求出发，开发了一款名为ArtCraftAI的网站（artcraftai.com），通过AI生成定制化卡片。该项目在小红书上获得初步流量后，成功实现了商业变现。</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1rem;">项目数据</h3>
+                        <ul style="line-height: 2;">
+                            <li>上线时间：1个月</li>
+                            <li>交易数量：2单</li>
+                            <li>总收入：88美元</li>
+                            <li>主要流量来源：小红书</li>
+                        </ul>
+                        
+                        <div class="quote-highlight">
+                            "太羞耻了，哎，就一个提示词，舒佬分分钟把我干趴下。"
+                        </div>
+                    </div>
+                `,
+                topics: `
+                    <div class="section-label">HOT TOPICS DETAIL</div>
+                    <h2 class="section-title">热门话题完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35; margin-bottom: 1.5rem;">微信支付与支付宝接入大模型，AI Agent商业化闭环打通</h3>
+                        <p>详细的支付集成方案和商业化路径探讨...</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1.5rem;">独立开发者项目ArtCraftAI崭露头角</h3>
+                        <p>从个人需求到商业变现的完整案例分析...</p>
+                    </div>
+                `,
+                tools: `
+                    <div class="section-label">TOOL UPDATES DETAIL</div>
+                    <h2 class="section-title">工具动态完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35; margin-bottom: 1.5rem;">新工具/新功能</h3>
+                        <ul>
+                            <li><strong>豆包创意 2.0</strong>：已进入灰度测试，对中文语境和诗词意象的理解能力大幅提升</li>
+                            <li><strong>Gemini CLI</strong>：更新支持读取和识别视频信息</li>
+                            <li><strong>Dia Browser</strong>：推送侧边栏Tab功能</li>
+                            <li><strong>微信支付 for Agent</strong>：推出小程序云支付（MCP）</li>
+                        </ul>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1.5rem;">工具对比与迁移</h3>
+                        <h4>Cursor → Claude Code 大迁移</h4>
+                        <p>迁移原因：性能下降、价格昂贵、网络连接不稳定</p>
+                    </div>
+                `,
+                insights: `
+                    <div class="section-label">PRACTICAL INSIGHTS DETAIL</div>
+                    <h2 class="section-title">实战经验完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35; margin-bottom: 1.5rem;">从Prompt Engineering到Context Engineering的思维跃迁</h3>
+                        <p>详细的系统构建方法论和实践指南...</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1.5rem;">ArtCraftAI商业案例分析</h3>
+                        <p>项目关键数据：上线1个月，收入$88，2笔订单</p>
+                    </div>
+                `,
+                industry: `
+                    <div class="section-label">INDUSTRY NEWS DETAIL</div>
+                    <h2 class="section-title">行业情报完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35; margin-bottom: 1.5rem;">大公司动态</h3>
+                        <ul>
+                            <li><strong>Anthropic</strong>：即将发布Claude Neptune v3，据称拥有非常强大的数学能力</li>
+                            <li><strong>华为</strong>：仓颉中文编程和三进制算法可能成为未来降本增效的关键技术</li>
+                        </ul>
+                    </div>
+                `,
+                qa: `
+                    <div class="section-label">Q&A DETAIL</div>
+                    <h2 class="section-title">热门问答完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35;">Q: 如何稳定使用Claude而不被封号？</h3>
+                        <p>核心是保持稳定的高质量网络环境。最佳方案是使用长期固定的静态住宅IP...</p>
+                        
+                        <h3 style="color: #FF6B35; margin-top: 2rem;">Q: 为什么我的Cursor频繁提示VPN问题？</h3>
+                        <p>最佳解决方案是关闭全局代理或TUN模式，让Cursor直连网络...</p>
+                    </div>
+                `
+            };
+            
+            return contents[type] || '<p>内容加载中...</p>';
+        }
+        
+        // 07-07的详细内容
+        function getDetailContent0707(type) {
+            const contents = {
+                highlight1: `
+                    <div class="section-label">HIGHLIGHT DETAIL</div>
+                    <h2 class="section-title">Cursor引发"信任危机"</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <p>Cursor近期调整计费模式与服务质量下降，引发用户普遍不满。新版计费（按点数消耗）被指"加价减量"，$20的Pro额度消耗极快，甚至数次对话后便强制切换至功能较弱的"Auto模式"。</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1rem;">关键问题</h3>
+                        <ul style="line-height: 2;">
+                            <li>新版计费模式下，几次对话就消耗150点</li>
+                            <li>1小时高强度使用就触发速率限制</li>
+                            <li>工具响应"巨慢"，严重影响开发效率</li>
+                        </ul>
+                        
+                        <div class="quote-highlight">
+                            "真是加价又减量了，调整使用速率，20刀一下就用完，现在引导开60刀的pro+了。"
+                        </div>
+                    </div>
+                `,
+                highlight2: `
+                    <div class="section-label">HIGHLIGHT DETAIL</div>
+                    <h2 class="section-title">AI长视频内容处理方案成熟</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <p>社群集中探讨了如何高效、低成本地处理3小时以上的长视频。直接使用Gemini或ChatGPT API分段处理成本高昂（一个3.5G视频花费约$10）。</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1rem;">最佳实践</h3>
+                        <ul style="line-height: 2;">
+                            <li><strong>通义听悟</strong>、<strong>飞书妙计</strong>：提供免费额度，适合轻度用户</li>
+                            <li><strong>Faster-Whisper</strong>：开源项目可本地部署，适合注重数据隐私的用户</li>
+                        </ul>
+                        
+                        <div class="quote-highlight">
+                            "70块钱解析3.5G视频很便宜了，如果你的人工一天100，你一个人一天能够解析出来吗？"
+                        </div>
+                    </div>
+                `,
+                highlight3: `
+                    <div class="section-label">HIGHLIGHT DETAIL</div>
+                    <h2 class="section-title">AI Agent与工作流应用爆发</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <p>从个人利用Gemini将会议录音自动生成网站，到企业CEO利用40多个AI Agent搭建自动化营销团队，AI正从"玩具"变为生产力工具。</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1rem;">关键数据</h3>
+                        <ul style="line-height: 2;">
+                            <li>Relay.app CEO用40个AI Agent替代了5人的营销团队</li>
+                            <li>Lovable公司用35人达到了8000万美元的年收入</li>
+                        </ul>
+                        
+                        <div class="quote-highlight">
+                            "这不是在替代人，而是在消除不创造价值的组织'卡路里'。没有垂直专业技能的中层管理将消失。"
+                        </div>
+                    </div>
+                `,
+                topics: `
+                    <div class="section-label">HOT TOPICS DETAIL</div>
+                    <h2 class="section-title">热门话题完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35; margin-bottom: 1.5rem;">Cursor → Claude Code 大迁移</h3>
+                        <p>详细的迁移原因分析和解决方案...</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1.5rem;">AI长视频处理方案</h3>
+                        <p>各种工具对比和成本效益分析...</p>
+                    </div>
+                `,
+                tools: `
+                    <div class="section-label">TOOL UPDATES DETAIL</div>
+                    <h2 class="section-title">工具动态完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35; margin-bottom: 1.5rem;">新工具/新功能</h3>
+                        <ul>
+                            <li><strong>Sparkraft.io</strong>：帮助快速生成高质量产品Prompt的工具</li>
+                            <li><strong>Higgsfield</strong>：图像与视频编辑工具，能任意更改人物服装、配饰等</li>
+                        </ul>
+                    </div>
+                `,
+                insights: `
+                    <div class="section-label">PRACTICAL INSIGHTS DETAIL</div>
+                    <h2 class="section-title">实战经验完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35; margin-bottom: 1.5rem;">会议录音一键生成风格化网站</h3>
+                        <p>用户将线下分享会的录音直接提供给Gemini 2.5 Pro，AI自动完成了内容整理、要点提炼、代码生成和样式设计。</p>
+                        
+                        <h3 style="color: #FF6B35; margin: 2rem 0 1.5rem;">Bloo AI VTuber商业案例</h3>
+                        <p>在YouTube拥有250万订阅者，7亿+播放量，为创作者带来超过七位数美元的收入。</p>
+                    </div>
+                `,
+                industry: `
+                    <div class="section-label">INDUSTRY NEWS DETAIL</div>
+                    <h2 class="section-title">行业情报完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35; margin-bottom: 1.5rem;">大公司动态</h3>
+                        <ul>
+                            <li><strong>微软大规模裁员</strong>：继5月裁员6,000人后，再裁员约9,000人</li>
+                            <li><strong>Meta训练主动聊天机器人</strong>：AI聊天机器人将具备主动发送消息的能力</li>
+                            <li><strong>Clio收购vLex</strong>：以10亿美元现金+股权的方式收购法律数据巨头</li>
+                        </ul>
+                    </div>
+                `,
+                qa: `
+                    <div class="section-label">Q&A DETAIL</div>
+                    <h2 class="section-title">热门问答完整内容</h2>
+                    <div class="content-text" style="margin-top: 2rem;">
+                        <h3 style="color: #FF6B35;">Q: AI生成内容的网站，申请支付渠道为何屡次被拒？</h3>
+                        <p>支付平台对AI生成内容（AIGC）业务的风险审查非常严格，尤其是纯图片生成类网站...</p>
+                        
+                        <h3 style="color: #FF6B35; margin-top: 2rem;">Q: 个人开发者/小团队，项目应该如何选择部署方案？</h3>
+                        <p>服务器+API总成本应控制在利润的30%以内，优秀线是10-20%...</p>
+                    </div>
+                `
+            };
+            
+            return contents[type] || '<p>内容加载中...</p>';
+        }
+        
+        // 初始化图表
+        function initChart(date) {
+            const ctx = document.getElementById(`toolsChart-${date}`);
+            if (!ctx) return;
+            
+            Chart.getChart(ctx)?.destroy();
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Augment', 'Cursor', 'Claude Code', 'Others'],
+                    datasets: [{
+                        data: [35, 25, 20, 20],
+                        backgroundColor: [
+                            '#FF6B35',
+                            '#FF8C42',
+                            '#FFA500',
+                            'rgba(255, 255, 255, 0.1)'
+                        ],
+                        borderWidth: 0,
+                        spacing: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart('2025-07-09');
+        });
+        
+        // ESC键关闭面板
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeDetail();
+            }
+        });
+    </script>
+</body>
+</html>

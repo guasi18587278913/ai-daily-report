@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日报 - 完整版</title>
+    
+    <style>
+        :root {
+            /* 主题色系统 */
+            --primary: #579d8d;
+            --primary-light: #7ab5a8;
+            --primary-lighter: #9cc9c0;
+            --primary-dark: #3e7165;
+            --primary-darker: #2a4d45;
+            
+            /* 中性色 - 高对比度 */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #f0f2f4;
+            --text-primary: #000000;
+            --text-secondary: #424242;
+            --text-tertiary: #666666;
+            
+            /* 功能色 */
+            --border-color: rgba(0, 0, 0, 0.12);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            
+            /* 状态色 */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            /* 动画 */
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* 深色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #0d1117;
+                --bg-secondary: #161b22;
+                --bg-tertiary: #21262d;
+                --text-primary: #ffffff;
+                --text-secondary: #e6edf3;
+                --text-tertiary: #b1bac4;
+                --border-color: rgba(255, 255, 255, 0.15);
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* 导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            .navbar {
+                background: rgba(22, 27, 34, 0.95);
+            }
+        }
+        
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* 日期选择器 */
+        .date-picker {
+            display: flex;
+            gap: 8px;
+            padding: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+        }
+        
+        .date-pill {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .date-pill:hover {
+            background: rgba(87, 157, 141, 0.1);
+            color: var(--primary);
+        }
+        
+        .date-pill.active {
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+        }
+        
+        /* Hero 区域 */
+        .hero {
+            margin-top: 64px;
+            padding: 60px 24px 40px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .hero-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .hero-date {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        
+        .hero-title {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+        
+        .hero-summary {
+            font-size: 20px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+        
+        .hero-highlights {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .highlight-tag {
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .highlight-tag::before {
+            content: '•';
+            color: var(--primary);
+            font-size: 20px;
+        }
+        
+        /* 主内容区 */
+        .main-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            gap: 40px;
+        }
+        
+        /* 内容区 */
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        /* 侧边栏 */
+        .sidebar {
+            width: 280px;
+            position: sticky;
+            top: 104px;
+            height: fit-content;
+        }
+        
+        .sidebar-nav {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary);
+        }
+        
+        .nav-item.active {
+            background: rgba(87, 157, 141, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* 内容板块 */
+        .section {
+            margin-bottom: 48px;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .section-icon {
+            font-size: 28px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+        
+        /* 热点卡片 */
+        .hot-topics {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .hot-topic-card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        
+        .hot-topic-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .topic-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .topic-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+        
+        .topic-content {
+            margin-bottom: 16px;
+        }
+        
+        .topic-meta {
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .topic-meta-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        
+        .topic-meta-content {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* 工具卡片网格 */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        
+        .tool-card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        
+        .tool-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+        
+        .tool-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .tool-description {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        
+        .tool-highlight {
+            padding: 8px 12px;
+            background: rgba(87, 157, 141, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--primary-dark);
+            font-weight: 500;
+        }
+        
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            background: var(--bg-primary);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: var(--bg-tertiary);
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table td {
+            padding: 16px 20px;
+            font-size: 15px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tr:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        /* Q&A 折叠面板 */
+        .qa-panel {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        .qa-header {
+            padding: 20px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: var(--transition);
+        }
+        
+        .qa-header:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .qa-question {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            flex: 1;
+        }
+        
+        .qa-toggle {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            transition: transform 0.3s ease;
+        }
+        
+        .qa-panel.expanded .qa-toggle {
+            transform: rotate(180deg);
+        }
+        
+        .qa-content {
+            padding: 0 24px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .qa-panel.expanded .qa-content {
+            padding: 0 24px 24px;
+            max-height: 1000px;
+        }
+        
+        .qa-description {
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+        
+        .qa-answer {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        /* 风险提醒 */
+        .risk-card {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+        
+        .risk-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+        
+        .risk-icon {
+            font-size: 24px;
+            color: var(--danger);
+            flex-shrink: 0;
+        }
+        
+        .risk-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* 今日金句 */
+        .quote-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 16px;
+            padding: 32px;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quote-card::before {
+            content: '"';
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            font-size: 120px;
+            opacity: 0.1;
+            font-weight: 900;
+        }
+        
+        .quote-text {
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .quote-author {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+                order: -1;
+                margin-bottom: 24px;
+            }
+            
+            .sidebar-nav {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-table {
+                overflow-x: auto;
+            }
+            
+            .data-table table {
+                min-width: 600px;
+            }
+        }
+        
+        /* 加载状态 */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            font-size: 18px;
+            color: var(--text-tertiary);
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 16px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">AI Daily</div>
+            <div class="date-picker" id="datePicker">
+                <!-- 日期选项将通过JS动态生成 -->
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero 区域 -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-date" id="heroDate">加载中...</div>
+            <h1 class="hero-title">AI日报</h1>
+            <p class="hero-summary" id="heroSummary">正在加载今日要点...</p>
+            <div class="hero-highlights" id="heroHighlights">
+                <!-- 要点标签将通过JS动态生成 -->
+            </div>
+        </div>
+    </section>
+    
+    <!-- 主内容区 -->
+    <div class="main-container">
+        <!-- 内容区 -->
+        <main class="content" id="mainContent">
+            <div class="loading">
+                <div class="spinner"></div>
+                正在加载内容...
+            </div>
+        </main>
+        
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <h3 class="sidebar-title">快速导航</h3>
+                <a href="#hot-topics" class="nav-item active">
+                    <span>🔥</span> 今日热点
+                </a>
+                <a href="#tools" class="nav-item">
+                    <span>🛠️</span> 工具动态
+                </a>
+                <a href="#practice" class="nav-item">
+                    <span>💡</span> 实战经验
+                </a>
+                <a href="#industry" class="nav-item">
+                    <span>📊</span> 行业情报
+                </a>
+                <a href="#resources" class="nav-item">
+                    <span>🎯</span> 实用资源
+                </a>
+                <a href="#pricing" class="nav-item">
+                    <span>💰</span> 价格情报
+                </a>
+                <a href="#qa" class="nav-item">
+                    <span>❓</span> 热门问答
+                </a>
+                <a href="#risks" class="nav-item">
+                    <span>🚨</span> 风险提醒
+                </a>
+                <a href="#quote" class="nav-item">
+                    <span>🌟</span> 今日金句
+                </a>
+            </nav>
+        </aside>
+    </div>
+    
+    <script>
+        // 日报数据索引
+        let reportsIndex = null;
+        let currentReport = null;
+        
+        // 初始化
+        async function init() {
+            try {
+                // 加载索引
+                const indexResponse = await fetch('./data/index.json');
+                const indexData = await indexResponse.json();
+                reportsIndex = indexData.reports;
+                
+                // 生成日期选择器
+                generateDatePicker();
+                
+                // 加载最新的日报
+                const latestDate = reportsIndex[reportsIndex.length - 1].date;
+                loadReport(latestDate);
+                
+                // 设置导航交互
+                setupNavigation();
+            } catch (error) {
+                console.error('初始化失败:', error);
+                showError('无法加载日报索引');
+            }
+        }
+        
+        // 生成日期选择器
+        function generateDatePicker() {
+            const datePicker = document.getElementById('datePicker');
+            datePicker.innerHTML = '';
+            
+            reportsIndex.forEach((report, index) => {
+                const pill = document.createElement('button');
+                pill.className = 'date-pill';
+                pill.textContent = formatDate(report.date);
+                pill.dataset.date = report.date;
+                
+                if (index === reportsIndex.length - 1) {
+                    pill.classList.add('active');
+                }
+                
+                pill.addEventListener('click', () => {
+                    document.querySelectorAll('.date-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    loadReport(report.date);
+                });
+                
+                datePicker.appendChild(pill);
+            });
+        }
+        
+        // 格式化日期
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return `${date.getMonth() + 1}月${date.getDate()}日`;
+        }
+        
+        // 加载日报
+        async function loadReport(date) {
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = '<div class="loading"><div class="spinner"></div>正在加载内容...</div>';
+            
+            try {
+                // 加载日报数据
+                const response = await fetch(`./data/${date}.json`);
+                if (!response.ok) throw new Error('日报不存在');
+                
+                currentReport = await response.json();
+                
+                // 更新Hero区域
+                updateHero();
+                
+                // 渲染主内容
+                renderContent();
+                
+                // 滚动到顶部
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                console.error('加载日报失败:', error);
+                showError('无法加载所选日期的日报');
+            }
+        }
+        
+        // 更新Hero区域
+        function updateHero() {
+            const heroDate = document.getElementById('heroDate');
+            const heroSummary = document.getElementById('heroSummary');
+            const heroHighlights = document.getElementById('heroHighlights');
+            
+            heroDate.textContent = `${currentReport.date} · ${currentReport.dayOfWeek}`;
+            heroSummary.textContent = currentReport.summary || '暂无摘要';
+            
+            heroHighlights.innerHTML = '';
+            if (currentReport.highlights && currentReport.highlights.length > 0) {
+                currentReport.highlights.forEach(highlight => {
+                    const tag = document.createElement('div');
+                    tag.className = 'highlight-tag';
+                    tag.textContent = highlight;
+                    heroHighlights.appendChild(tag);
+                });
+            }
+        }
+        
+        // 渲染主内容
+        function renderContent() {
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = '';
+            
+            // 解析并渲染各个板块
+            const sections = currentReport.sections;
+            for (const [sectionKey, sectionData] of Object.entries(sections)) {
+                const content = sectionData.raw;
+                
+                // 今日热点
+                if (content.includes('🔥 今日热点')) {
+                    renderHotTopics(content);
+                }
+                
+                // 工具动态
+                if (content.includes('🛠️ 工具动态')) {
+                    renderTools(content);
+                }
+                
+                // 处理其他可能存在的工具相关内容
+                if (content.includes('工具对比与迁移') || content.includes('实用技巧与问题解决')) {
+                    renderToolsExtended(content);
+                }
+                
+                // 实战经验
+                if (content.includes('💡 实战经验')) {
+                    renderPractice(content);
+                }
+                
+                // 行业情报
+                if (content.includes('📊 行业情报')) {
+                    renderIndustry(content);
+                }
+                
+                // 实用资源
+                if (content.includes('🎯 实用资源')) {
+                    renderResources(content);
+                }
+                
+                // 价格情报站
+                if (content.includes('💰 价格情报站')) {
+                    renderPricing(content);
+                }
+                
+                // 热门问答
+                if (content.includes('❓ 热门问答')) {
+                    renderQA(content);
+                }
+                
+                // 风险提醒
+                if (content.includes('🚨 风险提醒')) {
+                    renderRisks(content);
+                }
+                
+                // 今日金句
+                if (content.includes('🌟 今日金句')) {
+                    renderQuote(content);
+                }
+            }
+        }
+        
+        // 渲染今日热点
+        function renderHotTopics(content) {
+            const section = createSection('hot-topics', '🔥', '今日热点');
+            const container = document.createElement('div');
+            container.className = 'hot-topics';
+            
+            // 解析热点内容
+            const topicMatches = content.match(/\d+\.\s+(.+?)(?=\n\d+\.|$)/gs);
+            if (topicMatches) {
+                topicMatches.forEach((topic, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'hot-topic-card';
+                    
+                    // 解析标题
+                    const titleMatch = topic.match(/^\d+\.\s+(.+?)$/m);
+                    const title = titleMatch ? titleMatch[1] : '';
+                    
+                    // 解析内容
+                    const coreMatch = topic.match(/核心内容：(.+?)(?=\n|$)/s);
+                    const dataMatch = topic.match(/关键数据：(.+?)(?=\n|$)/s);
+                    const viewMatch = topic.match(/重要观点：(.+?)(?=\n|$)/s);
+                    
+                    card.innerHTML = `
+                        <div class="topic-number">${index + 1}</div>
+                        <h3 class="topic-title">${title}</h3>
+                        ${coreMatch ? `
+                            <div class="topic-meta">
+                                <div class="topic-meta-title">核心内容</div>
+                                <div class="topic-meta-content">${coreMatch[1].trim()}</div>
+                            </div>
+                        ` : ''}
+                        ${dataMatch ? `
+                            <div class="topic-meta">
+                                <div class="topic-meta-title">关键数据</div>
+                                <div class="topic-meta-content">${dataMatch[1].trim()}</div>
+                            </div>
+                        ` : ''}
+                        ${viewMatch ? `
+                            <div class="topic-meta">
+                                <div class="topic-meta-title">重要观点</div>
+                                <div class="topic-meta-content">${viewMatch[1].trim()}</div>
+                            </div>
+                        ` : ''}
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            }
+            
+            section.appendChild(container);
+            document.getElementById('mainContent').appendChild(section);
+        }
+        
+        // 渲染工具动态
+        function renderTools(content) {
+            const section = createSection('tools', '🛠️', '工具动态');
+            const container = document.createElement('div');
+            container.className = 'tools-grid';
+            
+            // 解析工具信息
+            const toolMatches = content.match(/- 工具名称：(.+?)(?=- 工具名称：|$)/gs);
+            if (toolMatches) {
+                toolMatches.forEach(tool => {
+                    const nameMatch = tool.match(/工具名称：(.+?)$/m);
+                    const descMatch = tool.match(/功能描述：(.+?)$/m);
+                    const highlightMatch = tool.match(/亮点：(.+?)$/m);
+                    
+                    if (nameMatch) {
+                        const card = document.createElement('div');
+                        card.className = 'tool-card';
+                        card.innerHTML = `
+                            <h4 class="tool-name">${nameMatch[1]}</h4>
+                            ${descMatch ? `<p class="tool-description">${descMatch[1]}</p>` : ''}
+                            ${highlightMatch ? `<div class="tool-highlight">${highlightMatch[1]}</div>` : ''}
+                        `;
+                        container.appendChild(card);
+                    }
+                });
+            }
+            
+            section.appendChild(container);
+            document.getElementById('mainContent').appendChild(section);
+        }
+        
+        // 渲染实战经验
+        function renderPractice(content) {
+            const section = createSection('practice', '💡', '实战经验');
+            const container = document.createElement('div');
+            
+            // 解析技术实践
+            const techPractice = content.match(/技术实践(.+?)(?=商业案例|$)/s);
+            if (techPractice) {
+                const practiceDiv = document.createElement('div');
+                practiceDiv.className = 'practice-section';
+                practiceDiv.innerHTML = '<h3 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--primary);">技术实践</h3>';
+                
+                const cases = techPractice[1].match(/- 案例名称：(.+?)(?=- 案例名称：|$)/gs);
+                if (cases) {
+                    cases.forEach(caseItem => {
+                        const card = document.createElement('div');
+                        card.className = 'tool-card';
+                        
+                        const nameMatch = caseItem.match(/案例名称：(.+?)$/m);
+                        const methodMatch = caseItem.match(/实现方法：(.+?)(?=\n|$)/s);
+                        const effectMatch = caseItem.match(/效果：(.+?)(?=\n|$)/s);
+                        const expMatch = caseItem.match(/可复用经验：(.+?)(?=\n|$)/s);
+                        
+                        card.innerHTML = `
+                            <h4 class="tool-name">${nameMatch ? nameMatch[1] : '未命名案例'}</h4>
+                            ${methodMatch ? `<p class="tool-description">${methodMatch[1].trim()}</p>` : ''}
+                            ${effectMatch ? `<div class="tool-highlight" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">效果：${effectMatch[1].trim()}</div>` : ''}
+                            ${expMatch ? `<div style="margin-top: 12px; padding: 12px; background: var(--bg-tertiary); border-radius: 8px; font-size: 14px; color: var(--text-secondary);">💡 ${expMatch[1].trim()}</div>` : ''}
+                        `;
+                        practiceDiv.appendChild(card);
+                    });
+                }
+                container.appendChild(practiceDiv);
+            }
+            
+            // 解析商业案例
+            const bizCase = content.match(/商业案例(.+?)(?=---|\n\n|$)/s);
+            if (bizCase) {
+                const bizDiv = document.createElement('div');
+                bizDiv.className = 'practice-section';
+                bizDiv.style.marginTop = '32px';
+                bizDiv.innerHTML = '<h3 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--primary);">商业案例</h3>';
+                
+                const projects = bizCase[1].match(/- 项目\/产品：(.+?)(?=- 项目\/产品：|$)/gs);
+                if (projects) {
+                    projects.forEach(project => {
+                        const card = document.createElement('div');
+                        card.className = 'hot-topic-card';
+                        
+                        const nameMatch = project.match(/项目\/产品：(.+?)$/m);
+                        const dataMatch = project.match(/关键数据：(.+?)(?=\n|$)/s);
+                        const factorMatch = project.match(/成功要素：(.+?)(?=\n|$)/s);
+                        const learnMatch = project.match(/可借鉴点：(.+?)(?=\n|$)/s);
+                        
+                        card.innerHTML = `
+                            <h3 class="topic-title" style="font-size: 20px;">${nameMatch ? nameMatch[1] : '未命名项目'}</h3>
+                            ${dataMatch ? `
+                                <div class="topic-meta">
+                                    <div class="topic-meta-title">关键数据</div>
+                                    <div class="topic-meta-content">${dataMatch[1].trim()}</div>
+                                </div>
+                            ` : ''}
+                            ${factorMatch ? `
+                                <div class="topic-meta">
+                                    <div class="topic-meta-title">成功要素</div>
+                                    <div class="topic-meta-content">${factorMatch[1].trim()}</div>
+                                </div>
+                            ` : ''}
+                            ${learnMatch ? `
+                                <div class="topic-meta" style="background: rgba(87, 157, 141, 0.1);">
+                                    <div class="topic-meta-title" style="color: var(--primary);">可借鉴点</div>
+                                    <div class="topic-meta-content">${learnMatch[1].trim()}</div>
+                                </div>
+                            ` : ''}
+                        `;
+                        bizDiv.appendChild(card);
+                    });
+                }
+                container.appendChild(bizDiv);
+            }
+            
+            section.appendChild(container);
+            document.getElementById('mainContent').appendChild(section);
+        }
+        
+        // 渲染行业情报
+        function renderIndustry(content) {
+            const section = createSection('industry', '📊', '行业情报');
+            const container = document.createElement('div');
+            
+            // 大公司动态
+            const companyNews = content.match(/大公司动态(.+?)(?=融资与收购|$)/s);
+            if (companyNews) {
+                const newsDiv = document.createElement('div');
+                newsDiv.innerHTML = '<h3 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--primary);">大公司动态</h3>';
+                
+                const newsItems = companyNews[1].match(/- (.+?)(?=\n-|$)/gs);
+                if (newsItems) {
+                    const newsList = document.createElement('div');
+                    newsList.style.display = 'grid';
+                    newsList.style.gap = '16px';
+                    
+                    newsItems.forEach(item => {
+                        const newsCard = document.createElement('div');
+                        newsCard.className = 'risk-card';
+                        newsCard.style.background = 'var(--bg-primary)';
+                        newsCard.style.border = '1px solid var(--border-color)';
+                        
+                        const cleanItem = item.replace(/^- /, '').trim();
+                        const parts = cleanItem.split('：');
+                        
+                        newsCard.innerHTML = `
+                            <div class="risk-content">
+                                <div class="risk-icon" style="color: var(--primary);">📰</div>
+                                <div class="risk-text">
+                                    ${parts.length > 1 ? `<strong>${parts[0]}：</strong>${parts.slice(1).join('：')}` : cleanItem}
+                                </div>
+                            </div>
+                        `;
+                        newsList.appendChild(newsCard);
+                    });
+                    newsDiv.appendChild(newsList);
+                }
+                container.appendChild(newsDiv);
+            }
+            
+            // 融资与收购
+            const funding = content.match(/融资与收购(.+?)(?=---|\n\n|$)/s);
+            if (funding) {
+                const fundDiv = document.createElement('div');
+                fundDiv.style.marginTop = '32px';
+                fundDiv.innerHTML = '<h3 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--primary);">融资与收购</h3>';
+                
+                const fundItems = funding[1].match(/- (.+?)(?=\n-|$)/gs);
+                if (fundItems) {
+                    const fundList = document.createElement('div');
+                    fundList.style.display = 'grid';
+                    fundList.style.gap = '16px';
+                    
+                    fundItems.forEach(item => {
+                        const fundCard = document.createElement('div');
+                        fundCard.className = 'hot-topic-card';
+                        fundCard.style.borderColor = 'var(--success)';
+                        
+                        const cleanItem = item.replace(/^- /, '').trim();
+                        const parts = cleanItem.split('：');
+                        
+                        fundCard.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                <span style="font-size: 24px;">💰</span>
+                                <h4 style="font-size: 18px; font-weight: 700; color: var(--text-primary);">
+                                    ${parts[0]}
+                                </h4>
+                            </div>
+                            ${parts.length > 1 ? `<p style="font-size: 15px; color: var(--text-secondary); line-height: 1.6;">${parts.slice(1).join('：')}</p>` : ''}
+                        `;
+                        fundList.appendChild(fundCard);
+                    });
+                    fundDiv.appendChild(fundList);
+                }
+                container.appendChild(fundDiv);
+            }
+            
+            section.appendChild(container);
+            document.getElementById('mainContent').appendChild(section);
+        }
+        
+        // 渲染实用资源
+        function renderResources(content) {
+            const section = createSection('resources', '🎯', '实用资源');
+            const container = document.createElement('div');
+            
+            // 工具推荐表格
+            const toolsTable = content.match(/工具推荐(.+?)(?=优惠信息|$)/s);
+            if (toolsTable && toolsTable[1].includes('工具名称')) {
+                const tableDiv = document.createElement('div');
+                tableDiv.innerHTML = '<h3 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--primary);">工具推荐</h3>';
+                
+                const table = document.createElement('div');
+                table.className = 'data-table';
+                
+                // 解析表格数据
+                const rows = toolsTable[1].split('\n').filter(row => row.trim() && !row.includes('---'));
+                if (rows.length > 1) {
+                    const headers = rows[0].split(/\s*\|\s*/).filter(h => h);
+                    const tableHtml = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    ${headers.map(h => `<th>${h}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows.slice(1).map(row => {
+                                    const cells = row.split(/\s*\|\s*/).filter(c => c);
+                                    return `<tr>${cells.map(c => `<td>${c}</td>`).join('')}</tr>`;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                    table.innerHTML = tableHtml;
+                }
+                tableDiv.appendChild(table);
+                container.appendChild(tableDiv);
+            }
+            
+            // 优惠信息
+            const offers = content.match(/优惠信息(.+?)(?=---|\n\n|$)/s);
+            if (offers) {
+                const offerDiv = document.createElement('div');
+                offerDiv.style.marginTop = '32px';
+                offerDiv.innerHTML = '<h3 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--primary);">优惠信息</h3>';
+                
+                const offerCard = document.createElement('div');
+                offerCard.className = 'hot-topic-card';
+                offerCard.style.background = 'linear-gradient(135deg, rgba(87, 157, 141, 0.05) 0%, rgba(87, 157, 141, 0.1) 100%)';
+                offerCard.style.borderColor = 'var(--primary)';
+                
+                const productMatch = offers[1].match(/产品\+优惠：(.+?)$/m);
+                const contentMatch = offers[1].match(/具体内容：(.+?)$/m);
+                const methodMatch = offers[1].match(/获取方法：(.+?)$/m);
+                
+                offerCard.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <span style="font-size: 32px;">🎁</span>
+                        <h4 style="font-size: 20px; font-weight: 700; color: var(--primary);">
+                            ${productMatch ? productMatch[1] : '限时优惠'}
+                        </h4>
+                    </div>
+                    ${contentMatch ? `<p style="font-size: 16px; color: var(--text-secondary); margin-bottom: 12px;">${contentMatch[1]}</p>` : ''}
+                    ${methodMatch ? `
+                        <div style="padding: 12px; background: var(--bg-tertiary); border-radius: 8px; font-size: 14px;">
+                            <strong>获取方法：</strong> ${methodMatch[1]}
+                        </div>
+                    ` : ''}
+                `;
+                offerDiv.appendChild(offerCard);
+                container.appendChild(offerDiv);
+            }
+            
+            section.appendChild(container);
+            document.getElementById('mainContent').appendChild(section);
+        }
+        
+        // 渲染价格情报
+        function renderPricing(content) {
+            const section = createSection('pricing', '💰', '价格情报站');
+            const container = document.createElement('div');
+            
+            // 价格对比表格
+            const priceTable = content.match(/主流AI编程工具价格对比(.+?)(?=---|\n\n|$)/s);
+            if (priceTable && priceTable[1].includes('产品')) {
+                const table = document.createElement('div');
+                table.className = 'data-table';
+                
+                // 解析表格数据
+                const rows = priceTable[1].split('\n').filter(row => row.trim() && !row.includes('---'));
+                if (rows.length > 1) {
+                    const headers = rows[0].split(/\s*\|\s*/).filter(h => h);
+                    const tableHtml = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    ${headers.map(h => `<th>${h}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows.slice(1).map(row => {
+                                    const cells = row.split(/\s*\|\s*/).filter(c => c);
+                                    return `<tr>${cells.map((c, i) => {
+                                        // 高亮价格列
+                                        if (i === 1 || i === 2) {
+                                            return `<td style="font-weight: 600; color: var(--primary);">${c}</td>`;
+                                        }
+                                        return `<td>${c}</td>`;
+                                    }).join('')}</tr>`;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                    table.innerHTML = tableHtml;
+                }
+                container.appendChild(table);
+            }
+            
+            section.appendChild(container);
+            document.getElementById('mainContent').appendChild(section);
+        }
+        
+        // 渲染热门问答
+        function renderQA(content) {
+            const section = createSection('qa', '❓', '热门问答');
+            const container = document.createElement('div');
+            
+            // 解析Q&A
+            const qaMatches = content.match(/Q\d+:(.+?)(?=Q\d+:|$)/gs);
+            if (qaMatches) {
+                qaMatches.forEach((qa, index) => {
+                    const panel = document.createElement('div');
+                    panel.className = 'qa-panel';
+                    
+                    const questionMatch = qa.match(/Q\d+:\s*(.+?)$/m);
+                    const descMatch = qa.match(/问题描述：(.+?)$/m);
+                    const answerMatch = qa.match(/最佳答案：(.+?)(?=Q\d+:|$)/s);
+                    
+                    panel.innerHTML = `
+                        <div class="qa-header" onclick="this.parentElement.classList.toggle('expanded')">
+                            <div class="qa-question">
+                                ${questionMatch ? questionMatch[1] : '问题 ' + (index + 1)}
+                            </div>
+                            <div class="qa-toggle">▼</div>
+                        </div>
+                        <div class="qa-content">
+                            ${descMatch ? `<div class="qa-description">${descMatch[1]}</div>` : ''}
+                            ${answerMatch ? `<div class="qa-answer">${answerMatch[1].trim()}</div>` : ''}
+                        </div>
+                    `;
+                    
+                    container.appendChild(panel);
+                });
+            }
+            
+            section.appendChild(container);
+            document.getElementById('mainContent').appendChild(section);
+        }
+        
+        // 渲染风险提醒
+        function renderRisks(content) {
+            const section = createSection('risks', '🚨', '风险提醒');
+            const container = document.createElement('div');
+            
+            // 解析风险项
+            const riskItems = content.match(/- (.+?)(?=\n-|$)/gs);
+            if (riskItems) {
+                riskItems.forEach(item => {
+                    const riskCard = document.createElement('div');
+                    riskCard.className = 'risk-card';
+                    
+                    const cleanItem = item.replace(/^- /, '').trim();
+                    const parts = cleanItem.split('：');
+                    
+                    riskCard.innerHTML = `
+                        <div class="risk-content">
+                            <div class="risk-icon">⚠️</div>
+                            <div class="risk-text">
+                                ${parts.length > 1 ? 
+                                    `<strong style="color: var(--danger);">${parts[0]}：</strong>${parts.slice(1).join('：')}` : 
+                                    cleanItem}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(riskCard);
+                });
+            }
+            
+            section.appendChild(container);
+            document.getElementById('mainContent').appendChild(section);
+        }
+        
+        // 渲染今日金句
+        function renderQuote(content) {
+            const section = createSection('quote', '🌟', '今日金句');
+            
+            const quoteMatch = content.match(/今日金句\s*\n+(.+)/);
+            if (quoteMatch) {
+                const quoteText = quoteMatch[1].trim();
+                const quoteCard = document.createElement('div');
+                quoteCard.className = 'quote-card';
+                
+                // 分离引言和作者
+                const parts = quoteText.split(' —— ');
+                const quote = parts[0].replace(/["""]/g, '');
+                const author = parts[1] || '佚名';
+                
+                quoteCard.innerHTML = `
+                    <div class="quote-text">${quote}</div>
+                    <div class="quote-author">—— ${author}</div>
+                `;
+                
+                section.appendChild(quoteCard);
+            }
+            
+            document.getElementById('mainContent').appendChild(section);
+        }
+        
+        // 渲染工具动态扩展内容
+        function renderToolsExtended(content) {
+            const section = document.getElementById('tools') || createSection('tools', '🛠️', '工具动态');
+            
+            // 工具对比与迁移
+            const migrationContent = content.match(/工具对比与迁移(.+?)(?=实用技巧与问题解决|---|\n\n|$)/s);
+            if (migrationContent) {
+                const migrationDiv = document.createElement('div');
+                migrationDiv.style.marginTop = '32px';
+                migrationDiv.innerHTML = '<h3 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--primary);">工具对比与迁移</h3>';
+                
+                const migrationCard = document.createElement('div');
+                migrationCard.className = 'hot-topic-card';
+                migrationCard.innerHTML = `<div style="white-space: pre-wrap; line-height: 1.6;">${migrationContent[1].trim()}</div>`;
+                migrationDiv.appendChild(migrationCard);
+                
+                section.appendChild(migrationDiv);
+            }
+            
+            // 实用技巧与问题解决
+            const tipsContent = content.match(/实用技巧与问题解决(.+?)(?=---|\n\n|$)/s);
+            if (tipsContent) {
+                const tipsDiv = document.createElement('div');
+                tipsDiv.style.marginTop = '32px';
+                tipsDiv.innerHTML = '<h3 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--primary);">实用技巧与问题解决</h3>';
+                
+                // 解析问题和解决方案
+                const problems = tipsContent[1].match(/- 问题：(.+?)(?=- 问题：|$)/gs);
+                if (problems) {
+                    problems.forEach(problem => {
+                        const card = document.createElement('div');
+                        card.className = 'tool-card';
+                        
+                        const problemMatch = problem.match(/问题：(.+?)$/m);
+                        const processMatch = problem.match(/解决过程：(.+?)(?=\n|$)/s);
+                        const solutionMatch = problem.match(/最终方案：(.+?)(?=\n|$)/s);
+                        const knowledgeMatch = problem.match(/知识点：(.+?)(?=\n|$)/s);
+                        
+                        card.innerHTML = `
+                            <h4 class="tool-name" style="color: var(--danger);">⚠️ ${problemMatch ? problemMatch[1] : '问题'}</h4>
+                            ${processMatch ? `<p class="tool-description">${processMatch[1].trim()}</p>` : ''}
+                            ${solutionMatch ? `<div class="tool-highlight" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">✅ 解决方案：${solutionMatch[1].trim()}</div>` : ''}
+                            ${knowledgeMatch ? `<div style="margin-top: 12px; padding: 12px; background: var(--bg-tertiary); border-radius: 8px; font-size: 14px; color: var(--text-secondary);">💡 ${knowledgeMatch[1].trim()}</div>` : ''}
+                        `;
+                        tipsDiv.appendChild(card);
+                    });
+                }
+                
+                section.appendChild(tipsDiv);
+            }
+            
+            // 确保将section添加到页面中
+            if (!document.getElementById('tools')) {
+                document.getElementById('mainContent').appendChild(section);
+            }
+        }
+        
+        // 创建板块
+        function createSection(id, icon, title) {
+            const section = document.createElement('section');
+            section.className = 'section';
+            section.id = id;
+            
+            const header = document.createElement('div');
+            header.className = 'section-header';
+            header.innerHTML = `
+                <span class="section-icon">${icon}</span>
+                <h2 class="section-title">${title}</h2>
+            `;
+            
+            section.appendChild(header);
+            return section;
+        }
+        
+        // 设置导航交互
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            // 点击导航项滚动到对应板块
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        const offset = targetElement.offsetTop - 100;
+                        window.scrollTo({
+                            top: offset,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // 滚动时更新活动导航项
+            window.addEventListener('scroll', () => {
+                const scrollPosition = window.scrollY + 150;
+                
+                navItems.forEach(item => {
+                    const targetId = item.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        const offsetTop = targetElement.offsetTop;
+                        const height = targetElement.offsetHeight;
+                        
+                        if (scrollPosition >= offsetTop && scrollPosition < offsetTop + height) {
+                            navItems.forEach(navItem => navItem.classList.remove('active'));
+                            item.classList.add('active');
+                        }
+                    }
+                });
+            });
+        }
+        
+        // 显示错误信息
+        function showError(message) {
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = `
+                <div style="text-align: center; padding: 80px 20px; color: var(--text-tertiary);">
+                    <div style="font-size: 48px; margin-bottom: 20px;">😕</div>
+                    <div style="font-size: 18px;">${message}</div>
+                </div>
+            `;
+        }
+        
+        // 启动应用
+        init();
+    </script>
+</body>
+</html>

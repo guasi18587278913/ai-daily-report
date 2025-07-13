@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日报 - 完整版</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #1a1a1a;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            line-height: 1.6;
+        }
+        
+        /* 生财有术配色方案 */
+        :root {
+            --primary-color: #FF6B35;
+            --secondary-color: #FFA500;
+            --accent-color: #00D9FF;
+            --bg-dark: #1a1a1a;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 107, 53, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* 修复鼠标指针样式 */
+        .has-source {
+            position: relative;
+            display: inline;
+            cursor: pointer; /* 改为pointer而不是help */
+        }
+        
+        .has-source:hover {
+            color: var(--primary-color);
+        }
+        
+        /* 来源标记样式 */
+        .source-indicator {
+            display: inline-block;
+            font-size: 0.75rem;
+            color: var(--primary-color);
+            margin-left: 0.35rem;
+            transition: all 0.3s ease;
+            vertical-align: baseline;
+            opacity: 0.6;
+        }
+        
+        .has-source:hover .source-indicator {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+        
+        /* 来源提示框 */
+        .source-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(30, 30, 30, 0.98), rgba(20, 20, 20, 0.98));
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--primary-color);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+            z-index: 1000;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+        
+        .source-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: var(--primary-color);
+        }
+        
+        .has-source:hover .source-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+        
+        /* 来源信息样式 */
+        .source-group {
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .source-author {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* 导航栏样式 */
+        .header {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95), rgba(30, 30, 30, 0.95));
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.25rem;
+            display: inline-block;
+        }
+        
+        /* 日期选择器 */
+        .date-selector {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .date-tab {
+            padding: 0.4rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-size: 0.9rem;
+        }
+        
+        .date-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .date-tab:hover::before {
+            left: 100%;
+        }
+        
+        .date-tab:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .date-tab.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #000;
+            font-weight: bold;
+        }
+        
+        /* 内容容器 */
+        .content-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem;
+        }
+        
+        .daily-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .daily-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 卡片样式 */
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+        }
+        
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 内容列表 */
+        .content-list {
+            list-style: none;
+        }
+        
+        .content-list li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .content-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        /* 话题卡片 */
+        .topic-card {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 165, 0, 0.05));
+            border: 1px solid var(--primary-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .topic-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        /* 引用样式 */
+        .quote-block {
+            border-left: 3px solid var(--accent-color);
+            padding-left: 1.5rem;
+            margin: 1rem 0;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+        
+        /* 工具卡片 */
+        .tool-card {
+            background: rgba(0, 217, 255, 0.05);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-card:hover {
+            background: rgba(0, 217, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        /* 紧凑模式切换按钮 */
+        .compact-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .compact-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.5);
+        }
+        
+        /* 紧凑头部模式 */
+        .header.compact {
+            padding: 0.5rem 0;
+            background: rgba(26, 26, 26, 0.98);
+        }
+        
+        .header.compact .hero-title {
+            font-size: 1.25rem;
+            margin-bottom: 0;
+        }
+        
+        .header.compact .text-muted {
+            display: none;
+        }
+        
+        .header.compact .date-selector {
+            margin-top: 0.25rem;
+        }
+        
+        .header.compact .date-tab {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.85rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 1.5rem;
+            }
+            
+            .content-container {
+                padding: 1rem 0.5rem;
+            }
+            
+            .section-card {
+                padding: 1.5rem 1rem;
+            }
+            
+            .header {
+                padding: 0.75rem 0;
+            }
+            
+            .compact-toggle {
+                display: none;
+            }
+        }
+    </style>
+
+<style>
+.source-trigger {
+    display: inline-block;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 5px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.source-trigger:hover {
+    opacity: 1;
+}
+
+.source-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.source-tooltip.show {
+    opacity: 1;
+}
+</style>
+</head>
+<body>
+    <!-- 紧凑模式切换按钮 -->
+    <button class="compact-toggle" id="compactToggle" title="切换紧凑模式">
+        <i class="fas fa-compress"></i>
+    </button>
+    
+    <!-- 头部 -->
+    <div class="header">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+            <h1 class="hero-title">AI日报</h1>
+            <p class="text-muted" style="margin: 0; font-size: 0.9rem;">每日精选AI行业动态，洞察前沿趋势</p>
+        </div>
+        
+        <!-- 日期选择器 -->
+        <div class="date-selector">
+            <div class="date-tab" data-date="2025-07-08">
+                <div>07-08 周二</div>
+            </div>
+            <div class="date-tab" data-date="2025-07-10">
+                <div>07-10 周四-周五</div>
+            </div>
+            <div class="date-tab active" data-date="2025-07-11">
+                <div>07-11 周五-周六</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 内容容器 -->
+    <div class="content-container">
+        <!-- 7月8日内容 -->
+        <div class="daily-content" id="content-2025-07-08">
+            <div class="section-card">
+                <h2 class="section-title">
+                    <div class="section-icon"><i class="fas fa-calendar-day"></i></div>
+                    2025-07-08 周二
+                </h2>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">
+                    微信支付接入AI Agent打通商业闭环，独立开发者项目初见成效，Cursor用户大规模迁移
+                </p>
+                
+                <!-- 热点内容 -->
+                <div class="topic-card">
+                    <h3 class="topic-title">🔥 微信支付与支付宝接入大模型</h3>
+                    <p>微信支付宣布接入腾讯元宝，同时字节的Coze平台也出现了官方的支付宝支付插件。这意味着开发者构建的AI Agent将能够直接调用支付接口，完成从服务到收款的商业全流程。</p>
+                    <div class="quote-block" style="margin-top: 1rem;">
+                        "帮实体商家做一个能收钱的智能体，很有想象空间。"
+                    </div>
+                </div>
+                
+                <!-- 工具动态 -->
+                <h3 class="section-title" style="font-size: 1.5rem; margin-top: 2rem;">
+                    <i class="fas fa-tools" style="color: var(--accent-color);"></i>
+                    工具动态
+                </h3>
+                <ul class="content-list">
+                    <li><strong>豆包创意 2.0</strong>：已进入灰度测试，对中文语境和诗词意象的理解能力大幅提升</li>
+                    <li><strong>Cursor → Claude Code 大迁移</strong>：因性能下降、价格昂贵、网络不稳定等问题，用户大规模迁移</li>
+                    <li><strong>Augment</strong>：作为另一款备受好评的替代品，在API对接和稳定性上优于当前版本的Cursor</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 7月10日内容 -->
+        <div class="daily-content" id="content-2025-07-10">
+            <div class="section-card">
+                <h2 class="section-title">
+                    <div class="section-icon"><i class="fas fa-calendar-day"></i></div>
+                    2025-07-10 周四-周五  
+                </h2>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">
+                    AI编程工具大洗牌，山海经内容爆火，用户成AI游牧民族
+                </p>
+                
+                <!-- 今日要点 -->
+                <h3 class="section-title" style="font-size: 1.5rem;">
+                    <i class="fas fa-fire" style="color: var(--primary-color);"></i>
+                    今日要点
+                </h3>
+                <p style="margin-bottom: 1.5rem;"><strong>AI编程工具大洗牌</strong>：Cursor因性能下降及定价调整，用户大量"用脚投票"转向Augment。Augment虽基于Claude，但因其出色的体验和稳定性备受好评，凸显"好用"比"能用"更重要。</p>
+                <p style="margin-bottom: 1.5rem;"><strong>内容创作新风口</strong>："山海经"题材在YouTube爆火。结合ASMR、K-POP、惊悚等元素，"山海经"主题正以各种形式席卷短、长视频，创造了数亿播放量的流量奇迹，成为可验证的爆款公式。</p>
+                <p style="margin-bottom: 1.5rem;"><strong>用户成"AI游牧民族"</strong>：社群热议观点认为，用户对通用大模型已无忠诚度，正从"全民热议"转向寻找能解决特定问题的"小而美"工具。这为垂直领域的AI应用开发者提供了巨大机会。</p>
+                
+                <!-- 热门话题 -->
+                <div class="topic-card" style="margin-top: 2rem;">
+                    <h3 class="topic-title">AI编程IDE之战：Cursor颓势，Augment崛起</h3>
+                    <p>大量开发者反馈，Cursor近期更新后"变笨变慢"，命令卡顿问题频发，且新计费模式引流失潮。备受推崇的替代品Augment，因其修改过程透明、上下文处理精准，成为新宠。</p>
+                    <div class="quote-block">
+                        "今天试用了augment，感觉比近期拉胯的cursor好多了，上下文到位，也不会瞎改，测试比较完善。"
+                    </div>
+                </div>
+                
+                <!-- 工具情报 -->
+                <h3 class="section-title" style="font-size: 1.5rem; margin-top: 2rem;">
+                    <i class="fas fa-tools" style="color: var(--accent-color);"></i>
+                    工具情报
+                </h3>
+                <div class="tool-card">
+                    <strong>ccundo</strong>：一个GitHub上的命令行工具，专门解决Claude Code无法便捷撤销/重做操作的痛点。免费。
+                </div>
+                <div class="tool-card">
+                    <strong>Pokee.ai</strong>：一个工作流智能体，能通过单一提示词，自动将内容（含视频）分发到Twitter、LinkedIn、YouTube等多个平台，支持定时发送。
+                </div>
+                <div class="tool-card">
+                    <strong>Magic Animator</strong>：Figma插件，能一键将静态设计稿转化为动效，并支持导出为Lottie、JSON等格式，极大提升交互Demo制作效率。
+                </div>
+            </div>
+        </div>
+        
+        <!-- 7月11日内容 -->
+        <div class="daily-content active" id="content-2025-07-11">
+            <div class="section-card">
+                <h2 class="section-title">
+                    <div class="section-icon"><i class="fas fa-calendar-day"></i></div>
+                    2025-07-11 至 2025-07-12 周五-周六
+                </h2>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">
+                    Grok 4仓促发布引争议，AI出海变现实战经验分享，开发工具法律风险警示
+                </p>
+                
+                <!-- 今日要点 -->
+                <h3 class="section-title" style="font-size: 1.5rem;">
+                    <i class="fas fa-fire" style="color: var(--primary-color);"></i>
+                    今日要点
+                </h3>
+                <ul class="content-list">
+                    <li>
+                        <span class="has-source">
+                            <strong>Grok 4仓促发布，毁誉参半</strong>：xAI发布Grok 4，跑分惊艳但实际测试中编码与识图能力拉胯，被群友用"六指图"反复测试打脸，高傲人设不倒。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AIGC 周刊会员群 02
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>AI出海变现实战复盘引爆社群</strong>：<span class="source-trigger" data-source="深海圈">📍</span>"林悦己"的盈利分享成为焦点，从业余项目到快速出单的路径，引发了关于需求验证、冷启动和心态建设的深度讨论。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> <span class="source-trigger" data-source="深海圈">📍</span>海外AI产品 -交流1群
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>OpenAI加速产品化，硬件野心显现</strong>：OpenAI被曝将推AI浏览器，并已将乔纳森·艾维（Jony Ive）的硬件公司并入麾下，产品化和硬件布局意图明显。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AIGC 周刊会员群 02
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                </ul>
+                
+                <!-- 热门话题 TOP 3 -->
+                <h3 class="section-title" style="font-size: 1.5rem; margin-top: 2rem;">
+                    <i class="fas fa-comments" style="color: var(--primary-color);"></i>
+                    热门话题（TOP 3）
+                </h3>
+                
+                <div class="topic-card">
+                    <h4 class="topic-title">1. Grok 4发布：是龙是虫，一测便知</h4>
+                    <p><strong>核心</strong>：xAI高调发布Grok 4，声称其"优于几乎所有研究生"。然而，社群成员上手实测后发现，其在编码、中文写作和多模态理解上存在明显短板，尤其是在经典的"六指识图"问题上，Grok 4不仅答错，还坚决不承认错误，表现得"很嘴硬"，与GPT-4.1的严谨形成鲜明对比。</p>
+                    <div class="quote-block">
+                        <span class="has-source">
+                            "grok 4 根本没法说服它是 6 根，很嘴硬。"
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AIGC 周刊会员群 02
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> 归藏
+                                </div>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="topic-card">
+                    <h4 class="topic-title">2. AI独立开发者盈利之路：从116天到9天</h4>
+                    <p><strong>核心</strong>：【深海圈】学员林悦己的分享揭示了AI产品盈利的关键跃迁。她第一个产品耗时116天才出单，第二个仅用9天。社群就此展开了50多个问题的接龙，深度探讨了如何快速验证需求（30分钟）、寻找种子用户、产品冷启动、定价策略以及从失败中学习并快速迭代的心法。</p>
+                    <div class="quote-block">
+                        <span class="has-source">
+                            "每个人都要用到自己的优势，去打大众的劣势，这样才顺手。悦己的优势是努力+社交表达无压力。"
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> <span class="source-trigger" data-source="深海圈">📍</span>海外AI产品 -交流1群
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> 刘小排
+                                </div>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="topic-card">
+                    <h4 class="topic-title">3. AI工具的法律红线：社群工具开发者的"保命指南"</h4>
+                    <p><strong>核心</strong>：群内对微信聊天记录分析工具（如chatlog）的讨论，揭示了国内AI工具开发的巨大法律风险。直接盈利的"套壳"GPT服务、抓取微信聊天数据的工具，极易触犯"破坏计算机信息系统罪"，已有开发者因此获利600万后被判刑。不盈利、自用的灰色地带风险稍低，但商业化需极其谨慎。</p>
+                    <div class="quote-block">
+                        <span class="has-source">
+                            "我听到的套壳赚了600万，关进去了，没收所有收入，然后进去一年半…"
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AI传术师编辑部
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> 匿名用户
+                                </div>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- 工具情报 -->
+                <h3 class="section-title" style="font-size: 1.5rem; margin-top: 2rem;">
+                    <i class="fas fa-tools" style="color: var(--accent-color);"></i>
+                    工具情报
+                </h3>
+                <ul class="content-list">
+                    <li>
+                        <span class="has-source">
+                            <strong>aimemo.cards</strong> - 一个能将聊天记录、网页内容快速保存为"卡片"的知识库工具，旨在打造一个AI可随时调用的"个人外脑"。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AI传术师编辑部
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> 七天可爱多
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>Magic Animator</strong> - Figma插件，能一键将静态设计稿转化为交互动画，并支持导出为JSON等动态格式，极大提升UI动效制作效率。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AIGC 周刊会员群 02
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>Claude Code + 多窗口 = AI产品经理</strong>。开多个CC窗口，一个负责写代码，一个扮演产品经理角色，不断对你的想法提问、引导你细化需求，能显著提升产品设计的严谨性和最终效果。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AI传术师俱乐部|生财有术
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> 云舒
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>Gemini + Ffmpeg = 自动化视频剪辑</strong>。让Gemini分析视频，生成包含精确时间戳的Python代码（调用ffmpeg库），本地运行代码即可实现自动添加字幕、切片等操作，绕开了AI无法直接操作文件的限制。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AI传术师俱乐部|生财有术
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                </ul>
+                
+                <!-- 实战干货 -->
+                <h3 class="section-title" style="font-size: 1.5rem; margin-top: 2rem;">
+                    <i class="fas fa-lightbulb" style="color: var(--secondary-color);"></i>
+                    实战干货
+                </h3>
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: var(--primary-color); margin-bottom: 1rem;">场景：挖掘新兴SEO关键词（在常规工具收录前）</h4>
+                    <p><strong>方法</strong>：使用"指数类比法"。找一个已知搜索量（如5000/天）和搜索指数（如17）的参考词。再查看新词的指数（如89），通过比例（89/17 * 5000）估算出新词的日搜索量约为2.6万。</p>
+                    <p>
+                        <span class="has-source">
+                            <strong>结果</strong>：群友用此法发现了一个窗口期仅1-2个月、日均搜索量约3万的新词 "date everything guide"，抢占了先机。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> <span class="source-trigger" data-source="深海圈">📍</span>海外AI产品 -交流1群
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> 刘小排
+                                </div>
+                            </span>
+                        </span>
+                    </p>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: var(--primary-color); margin-bottom: 1rem;">场景：在小红书通过虚拟资料变现</h4>
+                    <p><strong>方法</strong>：锁定一个极度细分的市场，如"日本小众旅游攻略地图"。利用AI高效生成内容，制作成精美的图文笔记。这种模式接近100%纯利，且可复制到其他小众领域。</p>
+                    <p>
+                        <span class="has-source">
+                            <strong>结果</strong>：群内分享了一个案例，仅30篇笔记就实现了5万元的纯变现。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> 光合AI·实战圈|会员交流群03
+                                </div>
+                            </span>
+                        </span>
+                    </p>
+                </div>
+                
+                <!-- 行业动态 -->
+                <h3 class="section-title" style="font-size: 1.5rem; margin-top: 2rem;">
+                    <i class="fas fa-chart-line" style="color: var(--accent-color);"></i>
+                    行业动态
+                </h3>
+                <ul class="content-list">
+                    <li>
+                        <span class="has-source">
+                            <strong>Google</strong> 发布医疗多模态模型MedGemma 27B，能解读X光、病理切片等多种医疗影像，在专业医疗领域持续发力。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> All in AI
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>快手</strong> 发布了旗下文生图模型"可图2.1"，并开启为期7天的会员免费使用活动，重点强化了中文书写能力。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> C 妹 AI 视频交流群
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>Perplexity</strong> 推出AI浏览器 Comet，目前仅限Max付费用户使用，进一步加剧AI原生入口的竞争。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AIGC 周刊会员群 02
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="has-source">
+                            <strong>Anthropic</strong> 年化收入从年初的10亿美元飙升至40亿美元，<strong>OpenAI</strong> 则达到100亿美元，显示出大型企业对AI服务的付费意愿和支出正在急剧增长。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> All in AI
+                                </div>
+                            </span>
+                        </span>
+                    </li>
+                </ul>
+                
+                <!-- 问答精选 -->
+                <h3 class="section-title" style="font-size: 1.5rem; margin-top: 2rem;">
+                    <i class="fas fa-question-circle" style="color: var(--secondary-color);"></i>
+                    问答精选
+                </h3>
+                
+                <div style="margin-bottom: 2rem;">
+                    <p style="font-weight: bold; color: var(--primary-color);">
+                        <span class="has-source">
+                            Q：不懂代码，如何让AI帮我优化项目里越堆越多的"屎山代码"？
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AIGC 周刊会员群 02
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> 匿名用户
+                                </div>
+                            </span>
+                        </span>
+                    </p>
+                    <p>
+                        <span class="has-source">
+                            A：可以采用"AI互搏"策略。让AI A（如GPT-4.1）生成代码后，将代码喂给AI B（如Claude Code）进行评审和挑错。然后，将AI B的负面评价复制给AI A，迫使其进行优化重构。反复此过程，可实现代码质量的迭代提升。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> AIGC 周刊会员群 02
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> 匿名用户
+                                </div>
+                            </span>
+                        </span>
+                    </p>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <p style="font-weight: bold; color: var(--primary-color);">
+                        <span class="has-source">
+                            Q：购买Claude等海外AI服务时，如何合法地规避20%的消费税？
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> <span class="source-trigger" data-source="深海圈">📍</span>海外AI产品 -交流1群
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> 匿名用户
+                                </div>
+                            </span>
+                        </span>
+                    </p>
+                    <p>
+                        <span class="has-source">
+                            A：核心方法是使用美国免税州（如俄勒冈州、阿拉斯加州等）的地址作为你的账单地址。但需注意，你使用的支付卡（如Wise）的注册地址最好也设为该免税州，否则支付时可能因地址不匹配而失败。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> <span class="source-trigger" data-source="深海圈">📍</span>海外AI产品 -交流1群
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> 夕远 & 匿名用户
+                                </div>
+                            </span>
+                        </span>
+                    </p>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <p style="font-weight: bold; color: var(--primary-color);">
+                        <span class="has-source">
+                            Q：做海外AI工具站，如何判断一个产品（如冷启动后日UV低于50）是该继续优化还是该放弃？
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> <span class="source-trigger" data-source="深海圈">📍</span>海外AI产品 -交流1群
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> CAI
+                                </div>
+                            </span>
+                        </span>
+                    </p>
+                    <p>
+                        <span class="has-source">
+                            A：分享嘉宾林悦己的经验是：快速验证（30分钟搞定MVP页面），然后立刻去Reddit等社区推广。如果完全没有正反馈（无人问津、无任何转化），则快速放弃。关键在于验证和获取反馈的速度，不要在没有明确信号的产品上沉没过长时间。
+                            <span class="source-indicator">📍</span>
+                            <span class="source-tooltip">
+                                <div class="source-group">
+                                    <i class="fas fa-users"></i> <span class="source-trigger" data-source="深海圈">📍</span>海外AI产品 -交流1群
+                                </div>
+                                <div class="source-author">
+                                    <i class="fas fa-user"></i> 林悦己（直播分享总结）
+                                </div>
+                            </span>
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 日期切换功能
+        document.querySelectorAll('.date-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有active类
+                document.querySelectorAll('.date-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.daily-content').forEach(c => c.classList.remove('active'));
+                
+                // 添加active类
+                this.classList.add('active');
+                const date = this.getAttribute('data-date');
+                document.getElementById(`content-${date}`).classList.add('active');
+            });
+        });
+        
+        // 优化tooltip位置
+        document.querySelectorAll('.has-source').forEach(element => {
+            element.addEventListener('mouseenter', function() {
+                const tooltip = this.querySelector('.source-tooltip');
+                if (tooltip) {
+                    const rect = tooltip.getBoundingClientRect();
+                    if (rect.left < 0) {
+                        tooltip.style.left = '0';
+                        tooltip.style.transform = 'translateX(0) translateY(-5px)';
+                    } else if (rect.right > window.innerWidth) {
+                        tooltip.style.left = 'auto';
+                        tooltip.style.right = '0';
+                        tooltip.style.transform = 'translateX(0) translateY(-5px)';
+                    }
+                }
+            });
+        });
+        
+        // 紧凑模式切换
+        const compactToggle = document.getElementById('compactToggle');
+        const header = document.querySelector('.header');
+        let isCompact = false;
+        
+        // 检查是否需要自动启用紧凑模式
+        function checkAutoCompact() {
+            const scrollY = window.scrollY;
+            if (scrollY > 100 && !isCompact) {
+                enableCompactMode();
+            } else if (scrollY <= 100 && isCompact && !localStorage.getItem('manualCompact')) {
+                disableCompactMode();
+            }
+        }
+        
+        function enableCompactMode() {
+            isCompact = true;
+            header.classList.add('compact');
+            compactToggle.innerHTML = '<i class="fas fa-expand"></i>';
+            compactToggle.title = '退出紧凑模式';
+        }
+        
+        function disableCompactMode() {
+            isCompact = false;
+            header.classList.remove('compact');
+            compactToggle.innerHTML = '<i class="fas fa-compress"></i>';
+            compactToggle.title = '切换紧凑模式';
+        }
+        
+        // 手动切换
+        compactToggle.addEventListener('click', function() {
+            if (isCompact) {
+                disableCompactMode();
+                localStorage.setItem('manualCompact', 'false');
+            } else {
+                enableCompactMode();
+                localStorage.setItem('manualCompact', 'true');
+            }
+        });
+        
+        // 滚动监听
+        window.addEventListener('scroll', checkAutoCompact);
+        
+        // 页面加载时检查状态
+        if (localStorage.getItem('manualCompact') === 'true') {
+            enableCompactMode();
+        }
+    </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 创建提示框元素
+    const tooltip = document.createElement('div');
+    tooltip.className = 'source-tooltip';
+    document.body.appendChild(tooltip);
+    
+    // 为所有来源触发器添加事件监听
+    const sourceTriggers = document.querySelectorAll('.source-trigger');
+    
+    sourceTriggers.forEach(trigger => {
+        trigger.addEventListener('mouseenter', function(e) {
+            const source = this.getAttribute('data-source');
+            tooltip.textContent = '来源：' + source;
+            tooltip.classList.add('show');
+            
+            // 定位提示框
+            const rect = this.getBoundingClientRect();
+            tooltip.style.left = rect.left + 'px';
+            tooltip.style.top = (rect.bottom + 5) + 'px';
+        });
+        
+        trigger.addEventListener('mouseleave', function() {
+            tooltip.classList.remove('show');
+        });
+    });
+});
+</script>
+</body>
+</html>

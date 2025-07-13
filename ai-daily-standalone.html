@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日报 - 独立版</title>
+    
+    <style>
+        :root {
+            /* 主题色系统 */
+            --primary: #579d8d;
+            --primary-light: #7ab5a8;
+            --primary-lighter: #9cc9c0;
+            --primary-dark: #3e7165;
+            --primary-darker: #2a4d45;
+            
+            /* 中性色 - 高对比度 */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #f0f2f4;
+            --text-primary: #000000;
+            --text-secondary: #424242;
+            --text-tertiary: #666666;
+            
+            /* 功能色 */
+            --border-color: rgba(0, 0, 0, 0.12);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            
+            /* 状态色 */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            /* 动画 */
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* 深色模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #0d1117;
+                --bg-secondary: #161b22;
+                --bg-tertiary: #21262d;
+                --text-primary: #ffffff;
+                --text-secondary: #e6edf3;
+                --text-tertiary: #b1bac4;
+                --border-color: rgba(255, 255, 255, 0.15);
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* 导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            .navbar {
+                background: rgba(22, 27, 34, 0.95);
+            }
+        }
+        
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* 日期选择器 */
+        .date-picker {
+            display: flex;
+            gap: 8px;
+            padding: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+        }
+        
+        .date-pill {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .date-pill:hover {
+            background: rgba(87, 157, 141, 0.1);
+            color: var(--primary);
+        }
+        
+        .date-pill.active {
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+        }
+        
+        /* Hero 区域 */
+        .hero {
+            margin-top: 64px;
+            padding: 60px 24px 40px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .hero-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .hero-date {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        
+        .hero-title {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+        
+        .hero-summary {
+            font-size: 20px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+        
+        .hero-highlights {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .highlight-tag {
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .highlight-tag::before {
+            content: '•';
+            color: var(--primary);
+            font-size: 20px;
+        }
+        
+        /* 主内容区 */
+        .main-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            gap: 40px;
+        }
+        
+        /* 内容区 */
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        /* 侧边栏 */
+        .sidebar {
+            width: 280px;
+            position: sticky;
+            top: 104px;
+            height: fit-content;
+        }
+        
+        .sidebar-nav {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary);
+        }
+        
+        .nav-item.active {
+            background: rgba(87, 157, 141, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* 内容板块 */
+        .section {
+            margin-bottom: 48px;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .section-icon {
+            font-size: 28px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+        
+        /* 热点卡片 */
+        .hot-topics {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .hot-topic-card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        
+        .hot-topic-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .topic-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .topic-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+        
+        .topic-content {
+            margin-bottom: 16px;
+        }
+        
+        .topic-meta {
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .topic-meta-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        
+        .topic-meta-content {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* 工具卡片网格 */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        
+        .tool-card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        
+        .tool-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+        
+        .tool-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .tool-description {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        
+        .tool-highlight {
+            padding: 8px 12px;
+            background: rgba(87, 157, 141, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--primary-dark);
+            font-weight: 500;
+        }
+        
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            background: var(--bg-primary);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: var(--bg-tertiary);
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table td {
+            padding: 16px 20px;
+            font-size: 15px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tr:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        /* Q&A 折叠面板 */
+        .qa-panel {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        .qa-header {
+            padding: 20px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: var(--transition);
+        }
+        
+        .qa-header:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .qa-question {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            flex: 1;
+        }
+        
+        .qa-toggle {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            transition: transform 0.3s ease;
+        }
+        
+        .qa-panel.expanded .qa-toggle {
+            transform: rotate(180deg);
+        }
+        
+        .qa-content {
+            padding: 0 24px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .qa-panel.expanded .qa-content {
+            padding: 0 24px 24px;
+            max-height: 1000px;
+        }
+        
+        .qa-description {
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+        
+        .qa-answer {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        /* 风险提醒 */
+        .risk-card {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+        
+        .risk-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+        
+        .risk-icon {
+            font-size: 24px;
+            color: var(--danger);
+            flex-shrink: 0;
+        }
+        
+        .risk-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* 今日金句 */
+        .quote-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 16px;
+            padding: 32px;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quote-card::before {
+            content: '"';
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            font-size: 120px;
+            opacity: 0.1;
+            font-weight: 900;
+        }
+        
+        .quote-text {
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .quote-author {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+                order: -1;
+                margin-bottom: 24px;
+            }
+            
+            .sidebar-nav {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-table {
+                overflow-x: auto;
+            }
+            
+            .data-table table {
+                min-width: 600px;
+            }
+        }
+        
+        /* 加载状态 */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            font-size: 18px;
+            color: var(--text-tertiary);
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 16px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">AI Daily</div>
+            <div class="date-picker" id="datePicker">
+                <button class="date-pill active" data-date="2025-07-07">7月7日</button>
+                <button class="date-pill" data-date="2025-07-08">7月8日</button>
+                <button class="date-pill" data-date="2025-07-10">7月10日</button>
+                <button class="date-pill" data-date="2025-07-11">7月11日</button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero 区域 -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-date" id="heroDate">2025-07-07 · 周一</div>
+            <h1 class="hero-title">AI日报</h1>
+            <p class="hero-summary" id="heroSummary">在这里添加07-07日报的总结</p>
+            <div class="hero-highlights" id="heroHighlights">
+                <div class="highlight-tag">第一个要点</div>
+                <div class="highlight-tag">第二个要点</div>
+                <div class="highlight-tag">第三个要点</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 主内容区 -->
+    <div class="main-container">
+        <!-- 内容区 -->
+        <main class="content" id="mainContent">
+            <!-- 今日热点 -->
+            <section class="section" id="hot-topics">
+                <div class="section-header">
+                    <span class="section-icon">🔥</span>
+                    <h2 class="section-title">今日热点 TOP 3</h2>
+                </div>
+                <div class="hot-topics">
+                    <div class="hot-topic-card">
+                        <div class="topic-number">1</div>
+                        <h3 class="topic-title">Cursor 引发"信任危机"，开发者掀起向 Claude Code 迁移潮</h3>
+                        <div class="topic-meta">
+                            <div class="topic-meta-title">核心内容</div>
+                            <div class="topic-meta-content">Cursor 近期调整计费模式与服务质量下降，引发用户普遍不满。新版计费（按点数消耗）被指"加价减量"，$20的Pro额度消耗极快，甚至数次对话后便强制切换至功能较弱的"Auto模式"。同时，用户反馈工具响应"巨慢"，严重影响开发效率。这导致大量开发者主动退订，转向性能更强、更稳定的 Claude Code (CC)。</div>
+                        </div>
+                        <div class="topic-meta">
+                            <div class="topic-meta-title">关键数据</div>
+                            <div class="topic-meta-content">有用户反馈，新版计费模式下，几次对话就消耗 150 点；一次 1小时 的高强度使用就触发了速率限制。</div>
+                        </div>
+                        <div class="topic-meta">
+                            <div class="topic-meta-title">重要观点</div>
+                            <div class="topic-meta-content">"真是加价又减量了，调整使用速率，20刀一下就用完，现在引导开60刀的pro+了。" ——【深海圈】成员</div>
+                        </div>
+                    </div>
+                    
+                    <div class="hot-topic-card">
+                        <div class="topic-number">2</div>
+                        <h3 class="topic-title">AI 长视频内容处理方案成熟，成本与效率取得平衡</h3>
+                        <div class="topic-meta">
+                            <div class="topic-meta-title">核心内容</div>
+                            <div class="topic-meta-content">社群集中探讨了如何高效、低成本地处理3小时以上的长视频。直接使用 Gemini 或 ChatGPT API 分段处理成本高昂（一个3.5G视频花费约$10）。经讨论，最佳实践是先分离并处理音频，或使用专门的音视频工具。这不仅大幅降低了API调用成本，也提高了处理效率。</div>
+                        </div>
+                        <div class="topic-meta">
+                            <div class="topic-meta-title">关键工具</div>
+                            <div class="topic-meta-content"><strong>通义听悟</strong>、<strong>飞书妙计</strong>提供免费额度，适合轻度用户；<strong>Faster-Whisper</strong> 开源项目可本地部署，适合有技术能力、注重数据隐私的用户。</div>
+                        </div>
+                        <div class="topic-meta">
+                            <div class="topic-meta-title">重要观点</div>
+                            <div class="topic-meta-content">"70块钱解析3.5G视频很便宜了，如果你的人工一天100，你一个人一天能够解析出来吗？" ——【深海圈】成员</div>
+                        </div>
+                    </div>
+                    
+                    <div class="hot-topic-card">
+                        <div class="topic-number">3</div>
+                        <h3 class="topic-title">AI Agent 与工作流应用爆发，从个人提效到重塑组织</h3>
+                        <div class="topic-meta">
+                            <div class="topic-meta-title">核心内容</div>
+                            <div class="topic-meta-content">社群分享了多个AI Agent和工作流的落地案例。从个人利用 Gemini 将会议录音自动生成网站，到企业 CEO 利用40多个AI Agent搭建自动化营销团队，AI正从"玩具"变为生产力工具。讨论的核心已从单纯的模型能力，转向"场景 > 流程 > 智能体 > 模型"的落地方法论，AI原生公司（如Lovable，35人达8000万美元年收入）的崛起，预示着组织架构的扁平化和对"AI原生员工"的需求。</div>
+                        </div>
+                        <div class="topic-meta">
+                            <div class="topic-meta-title">关键数据</div>
+                            <div class="topic-meta-content">Relay.app CEO 用 40个 AI Agent 替代了 5人 的营销团队；Lovable 公司用 35人 达到了 8000万美元 的年收入。</div>
+                        </div>
+                        <div class="topic-meta">
+                            <div class="topic-meta-title">重要观点</div>
+                            <div class="topic-meta-content">"这不是在替代人，而是在消除不创造价值的组织'卡路里'。没有垂直专业技能的中层管理将消失。" —— All in AI 成员引用 Elena Verna 观点</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 示例：工具动态板块 -->
+            <section class="section" id="tools">
+                <div class="section-header">
+                    <span class="section-icon">🛠️</span>
+                    <h2 class="section-title">工具动态</h2>
+                </div>
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <h4 class="tool-name">Sparkraft.io</h4>
+                        <p class="tool-description">一个旨在帮助用户快速生成高质量、专业且全面的产品Prompt的工具。</p>
+                        <div class="tool-highlight">目标是让 Cursor 或 v0 这类AI开发工具能"一次性"生成效果更好的MVP（最小可行性产品），极大提升开发效率。</div>
+                    </div>
+                    <div class="tool-card">
+                        <h4 class="tool-name">Higgsfield</h4>
+                        <p class="tool-description">一款图像与视频编辑工具，能任意更改图像中人物的服装、配饰、发型，甚至替换整个场景，并生成带有特效的视频。</p>
+                        <div class="tool-highlight">提供强大的可控性，让视频二次创作更具想象空间。</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <h3 class="sidebar-title">快速导航</h3>
+                <a href="#hot-topics" class="nav-item active">
+                    <span>🔥</span> 今日热点
+                </a>
+                <a href="#tools" class="nav-item">
+                    <span>🛠️</span> 工具动态
+                </a>
+                <a href="#practice" class="nav-item">
+                    <span>💡</span> 实战经验
+                </a>
+                <a href="#industry" class="nav-item">
+                    <span>📊</span> 行业情报
+                </a>
+                <a href="#resources" class="nav-item">
+                    <span>🎯</span> 实用资源
+                </a>
+                <a href="#pricing" class="nav-item">
+                    <span>💰</span> 价格情报
+                </a>
+                <a href="#qa" class="nav-item">
+                    <span>❓</span> 热门问答
+                </a>
+                <a href="#risks" class="nav-item">
+                    <span>🚨</span> 风险提醒
+                </a>
+                <a href="#quote" class="nav-item">
+                    <span>🌟</span> 今日金句
+                </a>
+            </nav>
+        </aside>
+    </div>
+    
+    <script>
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 日期选择器交互
+            const datePills = document.querySelectorAll('.date-pill');
+            datePills.forEach(pill => {
+                pill.addEventListener('click', function() {
+                    datePills.forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 模拟内容切换动画
+                    const content = document.querySelector('.content');
+                    content.style.opacity = '0';
+                    content.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        content.style.opacity = '1';
+                        content.style.transform = 'translateY(0)';
+                        content.style.transition = 'all 0.5s ease';
+                    }, 300);
+                    
+                    // 这里应该加载对应日期的数据
+                    // loadReport(this.dataset.date);
+                });
+            });
+            
+            // 设置导航交互
+            setupNavigation();
+        });
+        
+        // 设置导航交互
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            // 点击导航项滚动到对应板块
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        const offset = targetElement.offsetTop - 100;
+                        window.scrollTo({
+                            top: offset,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // 滚动时更新活动导航项
+            window.addEventListener('scroll', () => {
+                const scrollPosition = window.scrollY + 150;
+                
+                navItems.forEach(item => {
+                    const targetId = item.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        const offsetTop = targetElement.offsetTop;
+                        const height = targetElement.offsetHeight;
+                        
+                        if (scrollPosition >= offsetTop && scrollPosition < offsetTop + height) {
+                            navItems.forEach(navItem => navItem.classList.remove('active'));
+                            item.classList.add('active');
+                        }
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI日报 - 来源信息展示</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .content-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .has-source {
+            position: relative;
+            cursor: help;
+            display: inline-block;
+        }
+        
+        .has-source::after {
+            content: '📍';
+            font-size: 12px;
+            margin-left: 4px;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+        }
+        
+        .has-source:hover::after {
+            opacity: 1;
+        }
+        
+        .source-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 30, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid #FF6B35;
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+            z-index: 1000;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        }
+        
+        .source-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #FF6B35;
+        }
+        
+        .has-source:hover .source-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .source-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .source-group {
+            color: #FF6B35;
+            font-weight: 600;
+        }
+        
+        .source-author {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        h2 {
+            color: #FF6B35;
+            margin-bottom: 15px;
+        }
+        
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #FF6B35;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center; color: #FF6B35;">AI日报 - 来源信息展示演示</h1>
+        
+        <div class="content-item">
+            <h2>📌 今日要点</h2>
+            <ul>
+                <li>
+                    <span class="has-source">
+                        Grok 4仓促发布，毁誉参半：xAI发布Grok 4，跑分惊艳但实际测试中编码与识图能力拉胯
+                        <span class="source-tooltip">
+                            <div class="source-info">
+                                <span class="source-group">📍 AIGC 周刊会员群 02</span>
+                            </div>
+                        </span>
+                    </span>
+                </li>
+                <li>
+                    <span class="has-source">
+                        AI出海变现实战复盘引爆社群：【深海圈】"林悦己"的盈利分享成为焦点
+                        <span class="source-tooltip">
+                            <div class="source-info">
+                                <span class="source-group">📍 【深海圈】海外AI产品 -交流1群</span>
+                            </div>
+                        </span>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="content-item">
+            <h2>🔥 热门话题</h2>
+            <p>
+                <span class="has-source">
+                    金句："grok 4 根本没法说服它是 6 根，很嘴硬。"
+                    <span class="source-tooltip">
+                        <div class="source-info">
+                            <span class="source-group">📍 AIGC 周刊会员群 02</span>
+                            <span class="source-author">👤 归藏</span>
+                        </div>
+                    </span>
+                </span>
+            </p>
+        </div>
+        
+        <div class="content-item">
+            <h2>🛠 工具情报</h2>
+            <ul>
+                <li>
+                    <span class="has-source">
+                        <strong>aimemo.cards</strong> - 一个能将聊天记录、网页内容快速保存为"卡片"的知识库工具
+                        <span class="source-tooltip">
+                            <div class="source-info">
+                                <span class="source-group">📍 AI传术师编辑部</span>
+                                <span class="source-author">👤 七天可爱多</span>
+                            </div>
+                        </span>
+                    </span>
+                </li>
+                <li>
+                    <span class="has-source">
+                        <strong>Magic Animator</strong> - Figma插件，能一键将静态设计稿转化为交互动画
+                        <span class="source-tooltip">
+                            <div class="source-info">
+                                <span class="source-group">📍 AIGC 周刊会员群 02</span>
+                            </div>
+                        </span>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="content-item">
+            <h2>💡 实战干货</h2>
+            <p>
+                <span class="has-source">
+                    场景：挖掘新兴SEO关键词（在常规工具收录前）。使用"指数类比法"...
+                    <span class="source-tooltip">
+                        <div class="source-info">
+                            <span class="source-group">📍 【深海圈】海外AI产品 -交流1群</span>
+                            <span class="source-author">👤 刘小排</span>
+                        </div>
+                    </span>
+                </span>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
