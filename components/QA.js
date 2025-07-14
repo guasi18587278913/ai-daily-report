@@ -49,6 +49,25 @@ export default function QA({ data = [] }) {
               <div className="qa-answer-content">
                 {item.answer}
               </div>
+              
+              {item.source && (
+                <div className="qa-source">
+                  <span className="source-label">来源：</span>
+                  <span className="source-name">{item.source.name}</span>
+                  {item.source.questioner && (
+                    <>
+                      <span className="source-divider">·</span>
+                      <span className="source-role">提问者：{item.source.questioner}</span>
+                    </>
+                  )}
+                  {item.source.answerer && (
+                    <>
+                      <span className="source-divider">·</span>
+                      <span className="source-role">回答者：{item.source.answerer}</span>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -202,6 +221,36 @@ export default function QA({ data = [] }) {
           left: 0;
           top: 0;
           font-size: 16px;
+        }
+
+        .qa-source {
+          margin-top: 12px;
+          padding-top: 12px;
+          border-top: 1px solid #e5e7eb;
+          font-size: 13px;
+          color: #6b7280;
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 4px;
+        }
+
+        .source-label {
+          font-weight: 500;
+        }
+
+        .source-name {
+          color: #4b5563;
+          font-weight: 600;
+        }
+
+        .source-divider {
+          color: #d1d5db;
+        }
+
+        .source-role {
+          color: #8b5cf6;
+          font-weight: 500;
         }
 
         /* 动画效果 */

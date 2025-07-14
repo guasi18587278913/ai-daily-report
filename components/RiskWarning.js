@@ -55,6 +55,19 @@ export default function RiskWarning({ data = [] }) {
                   <span className="preventive-text">{risk.preventive}</span>
                 </div>
               )}
+              
+              {risk.source && (
+                <div className="risk-source">
+                  <span className="source-label">来源：</span>
+                  <span className="source-name">{risk.source.name}</span>
+                  {risk.source.author && (
+                    <>
+                      <span className="source-divider">·</span>
+                      <span className="source-author">{risk.source.author}</span>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -266,6 +279,35 @@ export default function RiskWarning({ data = [] }) {
           font-size: 14px;
           color: #4b5563;
           line-height: 1.5;
+        }
+
+        .risk-source {
+          margin-top: 12px;
+          padding-top: 12px;
+          border-top: 1px solid #e5e7eb;
+          font-size: 13px;
+          color: #6b7280;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+
+        .source-label {
+          font-weight: 500;
+        }
+
+        .source-name {
+          color: #4b5563;
+          font-weight: 600;
+        }
+
+        .source-divider {
+          color: #d1d5db;
+        }
+
+        .source-author {
+          color: #ef4444;
+          font-weight: 500;
         }
 
         /* 动画效果 */
