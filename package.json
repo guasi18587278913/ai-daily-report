@@ -11,7 +11,9 @@
     "deploy": "npm run build",
     "fix-json": "node scripts/fix-chinese-punctuation.js",
     "validate-json": "node scripts/validate-json.js",
-    "prebuild": "npm run fix-json"
+    "validate-data": "node scripts/validate-report-data.js",
+    "validate-all": "npm run validate-json && npm run validate-data",
+    "prebuild": "npm run fix-json && npm run validate-data"
   },
   "dependencies": {
     "next": "^14.0.0",

@@ -19,10 +19,24 @@ export default function Practice({ data = [] }) {
             <div className="practice-content">
               <h4 className="practice-title">{item.title || item.name}</h4>
               
+              {item.scene && (
+                <div className="practice-section">
+                  <h5 className="section-label">应用场景</h5>
+                  <p className="section-content">{item.scene}</p>
+                </div>
+              )}
+              
               {item.method && (
                 <div className="practice-section">
                   <h5 className="section-label">实现方法</h5>
                   <p className="section-content">{item.method}</p>
+                </div>
+              )}
+              
+              {item.result && (
+                <div className="practice-section">
+                  <h5 className="section-label">实现效果</h5>
+                  <p className="section-content">{item.result}</p>
                 </div>
               )}
               
@@ -58,6 +72,19 @@ export default function Practice({ data = [] }) {
                 <div className="practice-section">
                   <h5 className="section-label">可借鉴点</h5>
                   <p className="section-content insights">{item.learnings}</p>
+                </div>
+              )}
+              
+              {item.source && (
+                <div className="practice-source">
+                  <span className="source-label">来源：</span>
+                  <span className="source-name">{item.source.name}</span>
+                  {item.source.author && (
+                    <>
+                      <span className="source-divider">·</span>
+                      <span className="source-author">{item.source.author}</span>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -193,6 +220,35 @@ export default function Practice({ data = [] }) {
 
         .insights {
           padding-left: 40px;
+        }
+
+        .practice-source {
+          margin-top: 16px;
+          padding-top: 12px;
+          border-top: 1px solid #e5e7eb;
+          font-size: 13px;
+          color: #6b7280;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+
+        .source-label {
+          font-weight: 500;
+        }
+
+        .source-name {
+          color: #4b5563;
+          font-weight: 600;
+        }
+
+        .source-divider {
+          color: #d1d5db;
+        }
+
+        .source-author {
+          color: #579d8d;
+          font-weight: 500;
         }
 
         @media (max-width: 768px) {
