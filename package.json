@@ -5,10 +5,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run fix-json && next build",
     "start": "next start",
     "export": "next build",
-    "deploy": "npm run build"
+    "deploy": "npm run build",
+    "fix-json": "node scripts/fix-chinese-punctuation.js",
+    "validate-json": "node scripts/validate-json.js",
+    "prebuild": "npm run fix-json"
   },
   "dependencies": {
     "next": "^14.0.0",

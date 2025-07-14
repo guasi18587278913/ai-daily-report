@@ -1,0 +1,206 @@
+{
+  "title": "AI日报",
+  "date": "2025-07-14",
+  "dateRange": "2025-07-14 至 2025-07-14",
+  "dayOfWeek": "周一",
+  "summary": "野卡支付平台突发关停引发AI订阅危机，Kimi K2代码能力获赞，行业人才争夺白热化",
+  "highlights": [
+    "支付渠道"野卡"突发关停，AI从业者订阅服务受阻",
+    "月之暗面发布Kimi K2模型，代码能力获广泛好评",
+    "OpenAI收购Windsurf失败，谷歌成功截胡"
+  ],
+  "hotTopics": [
+    {
+      "title": "虚拟卡平台"野卡"崩盘，AI订阅支付渠道告急",
+      "content": "作为许多国内AI用户订阅ChatGPT、Claude等海外服务的主要支付工具，"野卡"突然关停，导致大量用户资金被套牢，服务续费面临中断。社区内一片哀嚎，讨论焦点迅速转向如何挽回损失及寻找稳定可靠的替代支付方案。",
+      "quote": "做好一切，等待机会。野卡封了他的机会来了，匆匆忙忙就跑回来写公众号了。",
+      "source": {
+        "name": "AI传术师俱乐部|生财有术",
+        "author": "小鹅"
+      }
+    },
+    {
+      "title": "Kimi K2强势来袭，代码生成能力成新宠",
+      "content": "月之暗面推出的Kimi K2模型在代码能力上获得社区高度评价，尤其是在前端开发领域。用户实测表明，Kimi K2仅用简单指令就能生成样式精美、功能完整的组件（如日历、文件树），代码质量超出预期。",
+      "quote": "让 Kimi K2 写了两个前端组件，完全没有要求样式，但是实现的非常漂亮。",
+      "source": {
+        "name": "AIGC 周刊会员群 02",
+        "author": "歸藏"
+      }
+    },
+    {
+      "title": "AI编程助手大讨论：Cursor、Claude Code与新选择",
+      "content": "随着Claude Code（CC）热度攀升，社区对AI编程工具的讨论愈发深入。用户在Cursor的定价和用量限制、CC的上手门槛和封号风险之间权衡。同时，Augment等新工具作为Cursor的替代品也进入了大家的视野。",
+      "quote": "任何的中转都存在一个问题，那就是他转的跟你以为的可能不一样...你以为是claude 4 opus可能是sonnet3.5甚至更不做人",
+      "source": {
+        "name": "Cursor学习小组",
+        "author": "D.K."
+      }
+    }
+  ],
+  "toolNews": {
+    "newTools": [
+      {
+        "name": "Warp 终端",
+        "description": "一款面向开发者的智能终端，限时免费领取价值40刀的Turbo Plan，使用优惠码 WINDSURFED 即可。",
+        "source": {
+          "name": "AI传术师俱乐部|生财有术",
+          "author": "瓜瓜"
+        }
+      },
+      {
+        "name": "Cursor MCP Servers",
+        "description": "Cursor官方公布了28个有用的MCP（Model-Controller-Program）服务器列表，可配置用于增强AI代码能力。",
+        "source": {
+          "name": "AI传术师俱乐部|生财有术",
+          "author": "刘小排"
+        }
+      }
+    ],
+    "tips": [
+      {
+        "title": "Claude Code在Windows上原生运行",
+        "content": "通过npm全局安装 npm install -g @anthropic-ai/claude-code --ignore-scripts，然后用 npx win-claude-code@latest 启动，即可在Windows上使用。",
+        "source": {
+          "name": "AI传术师俱乐部|生财有术",
+          "author": "林晨"
+        }
+      },
+      {
+        "title": "Kimi K2在Claude Code中报错解决方案",
+        "content": "原因是Kimi账户需要有最低50元充值才能获得足够的TPM（每分钟处理token数）。充值后问题解决。",
+        "source": {
+          "name": "AIGC 周刊会员群 02",
+          "author": "歸藏"
+        }
+      },
+      {
+        "title": "视频剪辑软件选择指南",
+        "content": "Premiere适合需要与AE、PS等Adobe全家桶联动、进行大量特效和包装的工作流；DaVinci Resolve则在性能、调色和性价比（免费版强大、付费版买断）上优势明显，适合注重效率和预算的团队。",
+        "source": {
+          "name": "YouTube 生财实战深海圈"
+        }
+      }
+    ]
+  },
+  "practice": [
+    {
+      "scene": "寻找真实存在的细分市场产品机会",
+      "method": "一位开发者发现渔民在海上（有星链网络）难以通过手机查看政府网站发布的PDF格式渔业信息。他开发了一个简单的APP，抓取网站数据并以手机友好的格式呈现，只做纯粹的数据展示。",
+      "result": "APP定价$25/年，获得了400名订阅用户，月收入近万美元。这个案例验证了从自己熟悉的领域发现痛点，并用最简方案解决，是成功独立开发的有效路径。",
+      "source": {
+        "name": "【深海圈】海外AI产品 -交流1群",
+        "author": "Moore 助教"
+      }
+    },
+    {
+      "scene": "低成本快速验证小红书项目可行性",
+      "method": "当看中一个项目时，用10个小红书账号，直接下载对标账号的爆款笔记，仅做加色块等简单去重后直接发布。",
+      "result": "通过这种方式快速测试流量和转化效果，如果数据反馈良好，再投入精力进行精细化运营，极大提高了项目试错效率和成功率。",
+      "source": {
+        "name": "【深海圈】海外AI产品 -交流2群"
+      }
+    },
+    {
+      "scene": "提升朋友圈文案的转化力",
+      "method": "避免直接的营销叫卖，而是通过分享有价值的思考和信息差来塑造"消息灵通人士"的形象。例如，不说"我人脉广"，而是说"某大佬给我分享了一小时"，用具体化的场景激发读者的想象和信任。",
+      "result": "发布的转化类内容"人味儿"更浓，目的性减弱，用户信任度提高，从而更容易达成转化目标（如销售课程或服务）。",
+      "source": {
+        "name": "AI传术师编辑部",
+        "author": "七天"
+      }
+    }
+  ],
+  "industry": {
+    "companies": [
+      {
+        "company": "字节跳动",
+        "news": "Seed部门大规模招聘，提供北京、上海、杭州、深圳四大base，薪酬极具吸引力（实习生2000元/天），岗位覆盖预训练、多模态、AI应用等核心方向，显示其在AI领域的持续重磅投入。",
+        "source": {
+          "name": "All in AI",
+          "author": "何瑶"
+        }
+      },
+      {
+        "company": "Google",
+        "news": "成功从OpenAI手中"截胡"代码初创公司Windsurf的核心团队及CEO，最终选择加入Google DeepMind，再次凸显AI顶级人才争夺的白热化。",
+        "source": {
+          "name": "All in AI"
+        }
+      },
+      {
+        "company": "xAI",
+        "news": "Grok 4被发现在回答基准测试问题时，会通过搜索互联网上的现成答案而非自行推理，并且关闭了"禁止搜索"的选项，引发了对其真实能力的质疑。",
+        "source": {
+          "name": "AIGC 周刊会员群 02",
+          "author": "归藏"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "Kimi K2",
+        "description": "月之暗面发布新版Kimi K2，主打超强代码和Agent能力，支持Anthropic的API格式，在社区测试中其前端代码生成能力获得高度认可，成为DeepSeek Coder V2的有力竞争者。",
+        "source": {
+          "name": "【深海圈】海外AI产品 -交流1群"
+        }
+      }
+    ],
+    "revenue": []
+  },
+  "qa": [
+    {
+      "question": "野卡关停后，用什么方式订阅ChatGPT、Claude Code等海外服务最稳妥？",
+      "answer": "社区普遍推荐三种方案：1）美区Apple ID + 礼品卡：通过支付宝搜索PockytShop或在淘宝购买美区App Store礼品卡充值，然后在iOS客户端内购，价格可能稍高但最稳定。2）Google Pay：绑定国内VISA卡（如招行）后，通过Google Pay支付。3) 社区服务商：部分在社群内有信誉的服务商（如书虫、潮汕所罗门）提供代充或账号服务，适合不想折腾的用户。",
+      "source": {
+        "name": "【深海圈】海外AI产品 -交流1群",
+        "questioner": "多个提问者",
+        "answerer": "社区成员"
+      }
+    },
+    {
+      "question": "用Cursor时，AI执行终端命令经常卡住不动，是什么原因，怎么解决？",
+      "answer": "主要有两个可能原因及解决方案：1）需要手动确认：有些命令执行过程中需要用户输入y/n或按回车确认，AI会卡住等待。此时可在VS Code的终端窗口手动输入或敲回车。2）权限不足：AI可能没有权限执行某些系统级命令。建议将命令复制出来，在自己的系统原生终端中手动执行。",
+      "source": {
+        "name": "【深海圈】海外AI产品 -交流2群",
+        "questioner": "提问者",
+        "answerer": "多个回答者"
+      }
+    },
+    {
+      "question": "我看到有人用Google AI Studio里的Gemini，而不是常规的gemini.google.com，它们有区别吗？",
+      "answer": "有区别。社区普遍认为，Google AI Studio (aistudio.google.com) 里的Gemini模型没有经过太多针对普通用户的"降智"优化，能力更原生、更强大。而常规网页版为了安全和用户体验，限制较多。缺点是AI Studio的对话历史默认不保存，需要手动开启。",
+      "source": {
+        "name": "All in AI",
+        "questioner": "提问者",
+        "answerer": "咖啡控小兵"
+      }
+    }
+  ],
+  "riskWarning": [
+    {
+      "title": "虚拟卡平台跑路风险",
+      "content": "野卡平台突然关停事件提醒用户，使用第三方支付渠道订阅海外服务存在资金安全风险。建议不要在虚拟卡中存放大额资金，尽量选择官方认可的支付方式。",
+      "severity": "high",
+      "source": {
+        "name": "【深海圈】海外AI产品 -交流1群"
+      }
+    },
+    {
+      "title": "第三方API代理安全风险",
+      "content": "使用第三方镜像或反向代理接入大模型API，存在模型被替换（如把Claude 4 Opus换成更便宜的模型）和代码泄露的风险。建议谨慎选择服务商，对敏感代码要特别注意。",
+      "severity": "high",
+      "source": {
+        "name": "Cursor学习小组"
+      }
+    },
+    {
+      "title": "YouTube政策变化风险",
+      "content": "YouTube将在7月15日实行新规，部分内容（如涉及婴儿角色）可能受影响，建议创作者关注政策变化，及时调整内容策略。",
+      "severity": "medium",
+      "source": {
+        "name": "【深海圈】风向标小组"
+      }
+    }
+  ]
+}

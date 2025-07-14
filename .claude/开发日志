@@ -29,4 +29,17 @@
   3. 一键部署：./update-and-deploy.sh
   4. 等待1-2分钟：网站自动更新
 
-  
+  --------------------------------
+
+  7月12日
+  1. 立即开始使用：
+  cd nextjs-version
+  npm install
+  npm run dev
+  2. 每日更新流程：
+    - 创建新的 data/YYYY-MM-DD.json 文件
+    - 更新 data/index.json
+    - 自动支持新日期的路由访问
+  3. 部署选择：
+    - Vercel (推荐，与 Next.js 完美集成)
+    - Netlify 或其他静态托管平台
