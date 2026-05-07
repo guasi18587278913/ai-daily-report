@@ -1,0 +1,134 @@
+{
+  "title": "AI日报",
+  "date": "2026-04-28",
+  "dateRange": "2026-04-28 至 2026-04-28",
+  "dayOfWeek": "周二",
+  "summary": "AI编程工具实战排坑(Trae/CC多开冲突),海外账号(Wise/Plus)注册避坑,国内小程序接入海外AI的合规红线.",
+  "highlights": [
+    "Wise注册时年度汇款金额必选中间档,选最高140万直接触发风控大概率封号",
+    "国内服务器调海外大模型供国内小程序属于违规,生图类还需算法备案+微信内容安全API",
+    "CC多窗口防冲突:Git worktree分配独立工作环境最后手动合并,比直接互相覆盖稳"
+  ],
+  "hotTopics": [
+    {
+      "title": "Wise注册避坑:年度汇款金额选中间档",
+      "content": "注册Wise时填写计划每年汇款金额,务必选中间档位(不要选最高如140万).最高档极易触发风控,被要求提供严苛的资产匹配证明,一旦不符大概率封号.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "国内小程序调用海外AI的合规红线",
+      "content": "在国内服务器调用未备案的海外大模型(如GPT Image2等)用于国内小程序,属于违规行为.国内上线AI产品(特别是生图类)不仅需要主体备案,还必须通过算法备案,并接入微信的内容安全API.",
+      "quote": "建议严格遵守合规要求,切勿心存侥幸.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "Claude Code多开防冲突:Git worktree方案",
+      "content": "同时开两个CC窗口(如一个改后端,一个改前端UI)极易产生文件修改冲突.建议用Git worktree分配不同的工作环境,最后手动合并;或让AI提供并发开发的提示词和实施方案.",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ],
+  "toolNews": {
+    "newTools": [
+      {
+        "name": "Zeabur 海外部署",
+        "description": "海外节点部署平台,群友提供 8 折优惠码:PNGTRID.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "Hostinger 海外服务器",
+        "description": "面向海外用户项目可选的国外服务器.",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "tips": [
+      {
+        "title": "Trae接火山API遇未授权报错",
+        "content": "Trae中接入火山引擎API若遇到未授权或TTS语音无法合成,需前往火山开发者后台手动开通对应资源的权限.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "阿里云Token团队版退款",
+        "content": "若误买了阿里云的团队版Token Plan导致在Trae中无法使用,可通过控制台订单找人工客服申请退款.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "CC访问扫码页用有头浏览器",
+        "content": "让Claude Code访问需要扫码或登录的网页时,必须明确指令其使用有头浏览器(带UI界面),方便人工介入扫码,并叮嘱不要轻易关闭页面.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "CC依赖安装提速:npm 换 pnpm",
+        "content": "使用Claude Code时强烈建议把npm替换为pnpm,可大幅提升运行速度.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "Deepseek v4-flash实测惊艳",
+        "content": "有群友用Deepseek v4-flash执行长达数小时的复杂通信协议排错任务,全程未中断且成功修复,成本仅3元.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "ChatGPT Plus 低价订阅",
+        "content": "土耳其区Apple ID礼品卡充值约78-87元/月.教程:chaojifeng.feishu.cn/wiki/WcNzwwqbHimSRJkuaQfcini9nWb,礼品卡渠道:oyunfor.com",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ]
+  },
+  "practice": [
+    {
+      "scene": "数据库环境隔离",
+      "method": "强烈建议新手把开发数据库与生产数据库(包括存储桶)分开.混用时调试清理数据极易误删真实用户的生产数据.",
+      "result": "建立物理隔离是避免重大事故的底线.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "对外小产品防被薅羊毛",
+      "method": "上线对外的小型AI产品(如字典,生图工具),务必加上人机验证(CAPTCHA).否则极易被脚本狂刷导致API额度瞬间耗尽.",
+      "result": "API额度可控,资金不被刷穿.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "AI改代码改崩了恢复",
+      "method": "做任何小功能修改前务必提交Git.若代码被AI改崩且布局无法恢复,直接通过Git回退到上一个版本,切忌硬改.",
+      "result": "高频Git提交是AI编程的安全网.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "C盘空间清理",
+      "method": "开发环境极易挤占C盘.定期清理系统节点备份,或用WPS等工具的清理功能;条件允许可重新划分磁盘分区.",
+      "result": "避免开发到一半磁盘满了死机.",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ],
+  "industry": {
+    "companies": [
+      {
+        "company": "深海圈课程",
+        "news": "刘小排老师4月29日(周三)晚直播,主题:找到真需求,Claude Code学习指南.链接:scys.com/deepsea/2001/course/129/chapter/12073",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "products": [],
+    "investment": []
+  },
+  "qa": [],
+  "riskWarning": [
+    {
+      "title": "Wise最高汇款档触发风控",
+      "content": "Wise注册时年度汇款金额选最高档(如140万)极易触发风控审查,被要求提供严苛资产证明,不符合就大概率封号.务必选中间档.",
+      "severity": "high",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "国内服务器调用未备案海外AI违规",
+      "content": "国内服务器调用未备案的海外大模型用于国内小程序违规.国内AI产品(尤其生图类)需要主体备案+算法备案+接入微信内容安全API,全套合规缺一不可.",
+      "severity": "high",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "免费模型排队2000+人",
+      "content": "Trae等工具的免费模型常因排队(实测2000+人)导致严重卡顿.生产场景建议直接付费切到火山引擎Coding Plan等付费方案.",
+      "severity": "low",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ]
+}

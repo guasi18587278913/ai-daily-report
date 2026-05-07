@@ -1,0 +1,127 @@
+{
+  "title": "AI日报",
+  "date": "2026-05-06",
+  "dateRange": "2026-05-06 至 2026-05-06",
+  "dayOfWeek": "周三",
+  "summary": "Codex强制接码WhatsApp,Claude挂机自动化任务易封,Hermes vs OpenClaw选型,API人机验证不可省.",
+  "highlights": [
+    "Codex验证多通过WhatsApp,建议英国giffgaff或美国eSIM卡(支持WiFi Calling)做长期接码",
+    "Claude对IP洁净度要求极高,挂机自动化别超2小时且要有人值守,100刀号被审概率高于20刀号",
+    "群友 @Joanna-上海 1.7万字期中作业实操+境外支付总结值得收藏"
+  ],
+  "hotTopics": [
+    {
+      "title": "Codex 接码:WhatsApp 长期方案与临时方案",
+      "content": "Codex近期切换账号或清缓存后频繁要求验证美国等海外手机号.验证多通过WhatsApp进行.长期接码建议英国giffgaff或美国实体/eSIM卡(支持WiFi Calling);临时解决可用接码平台(如sms-man.com)或在小红书花5元找人代收一次性验证码.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "Claude 封号防范:别夜间挂机",
+      "content": "有群友因夜间无人值守挂机运行自动化任务导致Claude账号被封.Claude对IP洁净度和稳定性要求极高,注册后尽量不换IP;不要长时间挂机跑自动化(建议每次不超过2小时且有人值守);高额度账号(100刀)被风控审查概率似乎高于基础额度(20刀),主生产力账号做好隔离备案.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "API 人机验证(CAPTCHA)不可省",
+      "content": "只要产品上线并涉及API调用,务必加上人机验证.即使初期没有流量,也能防止恶意机器人疯狂注册或狂刷API造成资金损失.",
+      "quote": "绝不能让安全漏洞成为商业化阶段的漏水桶.",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ],
+  "toolNews": {
+    "newTools": [
+      {
+        "name": "AITDK 浏览器插件",
+        "description": "在谷歌搜索结果中直接显示网站的各项流量与权重指标.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "Trae 移动端星巴克活动",
+        "description": "字节Trae赠送免费星巴克,手机端参与.URL:trae.cn/h5/events/solo-starbucks",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "tips": [
+      {
+        "title": "Hermes vs OpenClaw 选型",
+        "content": "Hermes上手极快适合快速出结果;OpenClaw更新快但需要补充更多手动配置.新手优先Hermes,老手要可定制选OpenClaw.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "DevTools MCP 连已开浏览器",
+        "content": "在Claude Code中用DevTools MCP想直接连接已打开的Chrome而非新建实例:先在Chrome中开启远程调试(chrome://inspect/#remote-debugging),再在MCP配置中带上 --autoConnect 参数.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "本地build正常但服务器部署失败",
+        "content": "核心原因通常是远程环境缺依赖或环境变量没配.直接看部署工具(如Vercel/服务器)的运行日志,把日志喂给AI(如DeepSeek或Trae)让其定位问题.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "Tabbit 调海外大模型要装国际版",
+        "content": "Tabbit浏览器需要下载国际版才能正常调用国外大模型.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "管理课程提到的几十个网站",
+        "content": "用飞书/Notion建自己的导航页,按功能分类并附账号密码与一句话备注,方便随时调用.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "深海圈直播回放手机看不了",
+        "content": "若小鹅通直播回放无法在手机直接看,浏览器打开链接(scys.com/deepsea/2001/course?course=直播回放),截图登录二维码后再用微信扫码登录观看.",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ]
+  },
+  "practice": [
+    {
+      "scene": "海外支付渠道选择",
+      "method": "对个人开发者,Stripe + 香港银行卡基本够用.Creem 可作为备用渠道,但新产品审核通常要两天左右.",
+      "result": "Stripe主+Creem备的双通道结构.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "复杂项目模型分级使用",
+      "method": "复杂项目用顶配(Claude Opus / Codex),能极大减少调试和修复Bug时间;简单任务用国内模型(GLM,MiniMax)做平替.",
+      "result": "成本和效率两边平衡.",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ],
+  "industry": {
+    "companies": [
+      {
+        "company": "OpenAI(Codex)",
+        "news": "Codex 切账号或清缓存后频繁要求海外手机号验证,验证流程接入WhatsApp.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "company": "Trump 中转站",
+        "news": "特朗普团队开始做中转站卖Token的相关动作引发关注.",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "products": [
+      {
+        "name": "OnlyByMe",
+        "description": "群友开发的粉色系落地页,UI与字体设计受好评,移动端语音交互仍在优化.URL:onlybyme.com",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "investment": []
+  },
+  "qa": [],
+  "riskWarning": [
+    {
+      "title": "Claude 长时间挂机自动化封号",
+      "content": "Claude对IP洁净度和稳定性要求极高,长时间无人值守挂机跑自动化任务极易被封.建议每次不超过2小时且有人值守.100刀高额度号被风控概率似乎高于20刀号,主力账号做好隔离.",
+      "severity": "high",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "API 上线必须加 CAPTCHA",
+      "content": "产品上线涉及API调用务必加人机验证.否则即使没流量也可能被恶意机器人狂刷API,导致额度耗尽和资金损失.",
+      "severity": "high",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ]
+}

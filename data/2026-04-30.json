@@ -1,0 +1,133 @@
+{
+  "title": "AI日报",
+  "date": "2026-04-30",
+  "dateRange": "2026-04-30 至 2026-04-30",
+  "dayOfWeek": "周四",
+  "summary": "Claude Code 403/移出组织报错应对,小米百T Token领取避坑,Tailwind v4截图空白等新坑修复,新手破局思路.",
+  "highlights": [
+    "CC报403或移出组织:终端能跑就是IDE缓存问题,终端也挂了就是被封,记得平时备份Markdown到Github",
+    "小米百T Token用GitHub邮箱申请通过率高,CC接入选自定义模型而非默认mimo选项",
+    "新手别陷AI迷宫:宏观提问代替微观填坑,让AI先给框架再填血肉"
+  ],
+  "hotTopics": [
+    {
+      "title": "Claude Code大面积报错:403与移出组织",
+      "content": "多位成员在使用Claude Code(含桌面端和CLI)时遭遇403或移出组织报错,疑似针对大陆用户的风控升级.验证方法:若IDE报错,先在终端输入 claude 启动或随便聊几句,终端正常说明只是IDE网络/缓存问题,重启或新建窗口即可;终端也报API错误就基本被封.建议平时把Markdown文档备份到GitHub,被封后官方通常会自动把余额退回原信用卡.",
+      "quote": "面对风控保持平常心,及时备份重要文件.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "小米百T Token白嫖与CC接入指南",
+      "content": "小米推出千万亿Token创造者激励计划(4.28-5.28).领取避坑:普通邮箱常无响应,建议直接用GitHub绑定的邮箱申请,通过率极高.接入Claude Code:不要在ccswitch中选默认的小米mimo选项,需用自定义模型(Custom)配置,填入支持的BaseURL和API Key.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "AI编程新手破局:避免陷AI迷宫",
+      "content": "面对高强度环境配置和AI报错,许多新手陷入每天80%时间陪AI纠错的循环.资深成员建议:1.AI(尤其国内或旧模型)极易把简单问题复杂化,不要针对单一报错点无脑追问;2.用宏观提问代替微观填坑,遇到完全不懂的章节,直接选中整节文本让AI浏览器用通俗语言列出框架和核心步骤.",
+      "quote": "先懂骨架再填血肉,方能避免陷入无穷尽的纠错死循环.",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ],
+  "toolNews": {
+    "newTools": [
+      {
+        "name": "练练模拟器",
+        "description": "群友作品,反向哄人项目.URL:lianlian-simulator.vercel.app",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "豆包语音合成API",
+        "description": "火山引擎语音合成大模型API控制台.URL:console.volcengine.com/speech/new/overview",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "firstdraft-work/skills",
+        "description": "产品需求分析Skill脚本样例(含本地运行).URL:github.com/firstdraft-work/skills",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "tips": [
+      {
+        "title": "Tailwind v4截图空白",
+        "content": "Tailwind v4改用 oklch() 导致 html2canvas 不兼容,替换为 html-to-image 即可解决.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "LLM JSON 解析翻车兜底",
+        "content": "Claude生成JSON时常带Markdown围栏或转义错误,导致严格解析失败.建议改用 streamText 并配更稳健的解析函数兜底.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "中转站503先切模型",
+        "content": "中转站报503时不一定是整体挂掉,更可能是单一上游账号被打满.果断切换模型(如切到Claude Sonnet 4.6)即可快速恢复.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "GPT 网络安全可信访问计划弹窗",
+        "content": "近期GPT在特定对话时容易触发网络安全风险提示要求KYC.不想实名的话直接新开一个会话即可绕过限制继续使用.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "Crisp注册必须严格伪装环境",
+        "content": "开启全局代理(TUN虚拟网卡模式),选美国节点并用 ip138.com 确认归属地,用Edge浏览器,首选语言改英文,必须用全新邮箱注册.",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ]
+  },
+  "practice": [
+    {
+      "scene": "AI分工作业模式",
+      "method": "项目中让Claude Code作为主干负责拆解决策,编排和整合,Codex CLI按计划执行代码,再配DevTools MCP做本地测试和日志诊断.",
+      "result": "明确分工,每个Agent发挥各自最强能力,整体产出质量提升.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "替代漫长的推送-部署-看日志循环",
+      "method": "推荐写本地验证脚本来替代推送到线上后再刷新看日志的循环.",
+      "result": "测试效率提升10倍.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "汇丰香港转账失败",
+      "method": "工行跨境支付通直接转汇丰极易失败(卡在姓名拼音格式).推荐中转方案:内地银行 → 众安银行(ZA Bank)或其他香港银行 → 汇丰香港.",
+      "result": "中转后到账率显著提升.",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ],
+  "industry": {
+    "companies": [
+      {
+        "company": "Anthropic(Claude)",
+        "news": "Claude Code桌面端与CLI 大面积出现 403或移出组织报错,疑似针对大陆用户的风控升级.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "company": "OpenAI",
+        "news": "GPT近期增加网络安全可信访问计划弹窗,特定对话场景要求实人认证(KYC).",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "company": "小米",
+        "news": "千万亿Token创造者激励计划(4.28-5.28)开放申请,含Pro/Max模型一个月Plan.",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "products": [],
+    "investment": []
+  },
+  "qa": [],
+  "riskWarning": [
+    {
+      "title": "Claude Code 403/移出组织封号",
+      "content": "Claude Code桌面端与CLI 大面积出现403或移出组织报错.验证:终端能正常聊就只是IDE问题;终端也挂就是被封.建议平时备份Markdown到GitHub,被封后官方通常会退回余额.",
+      "severity": "high",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "GPT KYC弹窗",
+      "content": "GPT特定对话触发网络安全风险提示要求实名认证.若不想实名,新开会话可绕过;要继续原对话则需完成KYC.",
+      "severity": "medium",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ]
+}

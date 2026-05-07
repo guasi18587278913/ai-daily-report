@@ -32,6 +32,55 @@
       "dayOfWeek": "周一",
       "title": "AI日报",
       "summary": "野卡支付平台突发关停引发AI订阅危机,Kimi K2代码能力获赞,行业人才争夺白热化"
+    },
+    {
+      "date": "2026-04-26",
+      "dateRange": "2026-04-26 至 2026-04-26",
+      "dayOfWeek": "周日",
+      "title": "AI日报",
+      "summary": "AI编程工具排坑,大模型API选型与出海建站SOP;GLM国际版按季扣费暗坑,Stripe个体户更易过审,Cloudflare国内访问需备案."
+    },
+    {
+      "date": "2026-04-27",
+      "dateRange": "2026-04-27 至 2026-04-27",
+      "dayOfWeek": "周一",
+      "title": "AI日报",
+      "summary": "海外SaaS首单变现实战,AI编程多模型协同工作流,API调试与风控实名审查应对."
+    },
+    {
+      "date": "2026-04-28",
+      "dateRange": "2026-04-28 至 2026-04-28",
+      "dayOfWeek": "周二",
+      "title": "AI日报",
+      "summary": "AI编程工具实战排坑(Trae/CC多开冲突),海外账号(Wise/Plus)注册避坑,国内小程序接入海外AI的合规红线."
+    },
+    {
+      "date": "2026-04-29",
+      "dateRange": "2026-04-29 至 2026-04-29",
+      "dayOfWeek": "周三",
+      "title": "AI日报",
+      "summary": "AI账号风控加剧(GPT低价号最短2天,Claude Max苹果卡充值易封),出海收款Stripe/Wise实战,多Agent协同与Debug思路."
+    },
+    {
+      "date": "2026-04-30",
+      "dateRange": "2026-04-30 至 2026-04-30",
+      "dayOfWeek": "周四",
+      "title": "AI日报",
+      "summary": "Claude Code 403/移出组织报错应对,小米百T Token领取避坑,Tailwind v4截图空白等新坑修复,新手破局思路."
+    },
+    {
+      "date": "2026-05-01",
+      "dateRange": "2026-05-01 至 2026-05-05",
+      "dayOfWeek": "周五-周二",
+      "title": "AI日报",
+      "summary": "五一假期合集:账号风控背景下的稳定订阅方案,Claude Code/Codex协作进阶玩法,出海产品基建与首单复盘."
+    },
+    {
+      "date": "2026-05-06",
+      "dateRange": "2026-05-06 至 2026-05-06",
+      "dayOfWeek": "周三",
+      "title": "AI日报",
+      "summary": "Codex强制接码WhatsApp,Claude挂机自动化任务易封,Hermes vs OpenClaw选型,API人机验证不可省."
     }
   ]
 }

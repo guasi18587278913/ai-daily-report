@@ -1,0 +1,163 @@
+{
+  "title": "AI日报",
+  "date": "2026-04-26",
+  "dateRange": "2026-04-26 至 2026-04-26",
+  "dayOfWeek": "周日",
+  "summary": "AI编程工具排坑,大模型API选型与出海建站SOP;GLM国际版按季扣费暗坑,Stripe个体户更易过审,Cloudflare国内访问需备案.",
+  "highlights": [
+    "Spec Prompt是AI编程的底线,明确界定做什么和不做什么,防止AI胡乱改底层逻辑",
+    "智谱GLM国际版Coding Plan页面诱导按月看价,实际按季度一次性扣194.4美元,是国内版近3倍",
+    "Stripe大陆护照走Sole Proprietorship通过率远高于Individual,配合护照+ZA Bank+清晰业务描述即可"
+  ],
+  "hotTopics": [
+    {
+      "title": "约束AI暴走:Spec Prompt是必修课",
+      "content": "AI编程时常出现胡说八道(随意改数据库架构,拆东墙补西墙).必须在初期提供明确的限制性Prompt,清晰界定做什么和不做什么.参考话术:要求1.不要改聊天逻辑;2.不要改API;3.不要改Prompt;4.不要接语音/图片;5.不要暴露API Key;6.只修改当前的UI文案.",
+      "quote": "AI编程的底线是规则.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "GLM国际版价格刺客:按季扣费陷阱",
+      "content": "智谱GLM国际版的Coding Plan页面存在视觉引导误区.页面展示的是类似单月几十美金的低价,但实际结算要求按季度一次性扣费194.4美元,折算下来是国内版本的近3倍.CC Switch接入GLM 5 时Base URL应填 https://open.bigmodel.cn/api/anthropic .",
+      "quote": "页面看着便宜,结账才发现是季度起步.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "新手出海建站极简SOP五步法",
+      "content": "需求挖掘(用AI分析Reddit/HN找长尾痛点) → 技术选型(Next.js或HTML+Tailwind,部署Cloudflare Pages或Vercel) → SEO内容(TDK完善+AI批量生成+海外论坛换外链) → 流量广告(Google Ads小规模测试) → 变现收款(Adsense+电汇结汇).",
+      "quote": "找到通过搜索词验证过的长尾刚需,比追逐宽泛大词靠谱得多.",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ],
+  "toolNews": {
+    "newTools": [
+      {
+        "name": "Mole",
+        "description": "Mac磁盘清理工具,解决AI编程时虚拟内存爆满(如Cursor/CC运行项目内存飙到80GB+)导致的死机问题.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "火山引擎AI编码套餐",
+        "description": "支持Kimi/豆包等模型的Coding Plan,免费版排队2000+人易卡顿,付费套餐稳定.URL:volcengine.com/activity/codingplan",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "DigitalPlat免费子域名",
+        "description": "供测试学习用的免费域名申请渠道,可无限开子域名,配合Cloudflare托管.URL:dash.domain.digitalplat.org",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "TablePlus",
+        "description": "数据库管理工具,群友分享了百度网盘资源(提取码:kzwh).",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "Picboil",
+        "description": "群友开发的图像处理应用.URL:picboil.ai",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "tips": [
+      {
+        "title": "Trae国内版强装Pencil插件",
+        "content": "Trae国内版搜索不到Pencil插件时,按Ctrl+P输入命令 ext install highagency.pencildev 强制安装;或切换到国际版.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "Codex桌面版白屏/无限跳商店修复",
+        "content": "需要全程开启全局代理并在Microsoft Store中安装.若仍失败,需确保Windows的时区,区域,代理IP区域三者保持一致.反复要求登录的,重置环境变量即可.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "Git push失败:开了系统代理不等于Git走代理",
+        "content": "开启了系统代理但不代表Git走了代理,必须专门为Git配置网络代理命令.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "UI to Code推荐方案",
+        "content": "MiniMax依赖MCP读图视觉还原弱.更佳方案:Kimi 2.6读图还原;或直接把含设计图+切图的.zip丢给IDE处理,效果远好于单发截图.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "API中转站优于传统梯子",
+        "content": "对于只需调用大模型API的开发者,购买API中转站服务(按需付费,日卡或量计),稳定性远高于翻墙代理.",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ]
+  },
+  "practice": [
+    {
+      "scene": "国内服务批量注册时账号管理混乱",
+      "method": "近期大量注册Cloudflare/Neon/Resend等平台时,统一通过Chrome账号或GitHub OAuth授权登录,并用Chrome自带工具管理密码,避免手动注册造成账户混乱.",
+      "result": "账号体系清晰可追溯,密码不会丢,OAuth也降低了被风控的概率.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "Stripe大陆护照申请被拒",
+      "method": "选Sole Proprietorship(个体经营/独资)而非Individual.搭配清晰低风险业务描述(如数字产品销售)+护照+ZA Bank账户,即使没有香港BRN也有较大几率过审.",
+      "result": "通过率远高于Individual路径,是目前最稳的零门槛Stripe路线.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "国内访问Cloudflare/Vercel站点极卡",
+      "method": "根本解法是购买国内服务器并完成网信/阿里云备案,或者转做微信小程序.Vercel+DNS绕过备案的方式存在合规风险.",
+      "result": "正规备案路径慢但稳;绕过路径短期可用但合规存疑.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "Resend发邮件后想接收用户回信",
+      "method": "无需在域名服务商处来回改配置.直接在Cloudflare中绑定Email路由,把 support@yourdomain.com 转发至个人私人邮箱即可.",
+      "result": "零成本搞定域名邮箱收发.",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ],
+  "industry": {
+    "companies": [
+      {
+        "company": "智谱(GLM)",
+        "news": "国际版Coding Plan采用诱导式定价,标月度价但按季度扣费194.4美元,单价是国内版近3倍,引发开发者警示.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "company": "字节火山引擎",
+        "news": "上线AI编码套餐Coding Plan,整合Kimi,豆包等模型,付费版本可避开免费排队2000+人的卡顿问题.",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "products": [
+      {
+        "name": "Picboil",
+        "description": "群友开发的图像处理应用,URL:picboil.ai",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "investment": []
+  },
+  "qa": [],
+  "riskWarning": [
+    {
+      "title": "Ping0网站偷取真实IP",
+      "content": "代理检测网站Ping0利用浏览器WebRTC接口,无视普通代理设置在后台秘密抓取用户真实公网IP和浏览器指纹,可能被用于高价值风控数据出售.测试代理节点时慎用此类不明工具.",
+      "severity": "high",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "Crisp创建Workspace失败:纯IP问题",
+      "content": "建了账号却无法创建Workspace,属于纯粹的IP被限制,清理缓存无效.解决方案:开启无痕模式+彻底更换干净的代理IP节点重新注册.",
+      "severity": "medium",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "Cursor/CC内存爆满导致死机",
+      "content": "有成员遇到本地内存占用飙至80GB+.原因是Mac在运行内存不足时调用硬盘作虚拟内存,磁盘空间不足会直接卡死.建议清理磁盘空间或排查死循环代码.",
+      "severity": "medium",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "Cloudflare R2开通需绑卡",
+      "content": "开启R2存储桶服务前必须强制绑定信用卡,否则无法启用.",
+      "severity": "low",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "title": "AI日报",
+  "date": "2026-04-29",
+  "dateRange": "2026-04-29 至 2026-04-29",
+  "dayOfWeek": "周三",
+  "summary": "AI账号风控加剧(GPT低价号最短2天,Claude Max苹果卡充值易封),出海收款Stripe/Wise实战,多Agent协同与Debug思路.",
+  "highlights": [
+    "GPT低价代充号最短存活2天,100美元以上正规账号才相对稳定",
+    "出海收款主体推荐美国公司或个人香港账户,英国公司+Wise容易卡在汇率磨损",
+    "本地正常但Vercel线上挂了:必须把前端Console日志+后端部署日志一起喂给AI,别空对空抽卡"
+  ],
+  "hotTopics": [
+    {
+      "title": "AI账号风控全面收紧:低价号大面积阵亡",
+      "content": "近期GPT和Claude风控显著提升.低价代充/日抛/灰产Plus/Team/Pro号被官方降智,限流甚至直接封禁,存活期最短仅2天.100美元以上正规账号相对稳定.Claude Code 100刀Max号若用苹果礼品卡充值也极易被封(封后可找苹果客服退款).封号不仅看IP是否干净,更看用户行为模式.",
+      "quote": "拥抱正规渠道,摒弃低价日抛账号.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "出海收款基础设施:Stripe + Wise 实战路线",
+      "content": "英国公司注册Stripe并用Wise收款坑点多,容易卡在无法设置美元收款,必须转英镑/欧元的汇率磨损.普遍推荐注册美国公司或用个人香港账户.零门槛路线:用护照+手机号注册Wise个人号(地址填国内信用卡账单地址)→ 开通香港账户+申请虚拟卡 → 用此开通Stripe.Stripe注册时公司名要严格对应业务网站,后续审核会比对.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "多Agent协同:像真人交接一样工作",
+      "content": "同时用Claude和Codex推进任务时,小排老师建议像真人交接:让不同Agent一起讨论,要求前一个Agent输出交接文档,或建立共享的外部看板.绝对不能跳过的环节,必须用Hook加以约束.",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ],
+  "toolNews": {
+    "newTools": [
+      {
+        "name": "小米 MiMo 百万亿 Token 激励",
+        "description": "面向开发者限时免费发放Token,含Pro/Max模型,会给一个月Plan.申请时认真填写过往AI项目经验,通过率极高.URL:100t.xiaomimimo.com",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "apimart.ai / evolink.ai",
+        "description": "国内模型API聚合平台,免去各家控制台来回切换.联系evolink客服提及刘小排有折扣或赠金.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "Supademo",
+        "description": "产品演示录屏工具.URL:app.supademo.com/welcome",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "飞书 CLI",
+        "description": "飞书命令行工具.URL:feishu.cn/feishu-cli",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "codex-plugin-cc",
+        "description": "OpenAI官方为Claude Code做的Codex插件,可在CC终端直接调用Codex.URL:github.com/openai/codex-plugin-cc",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "tips": [
+      {
+        "title": "Resend测试邮件没绑域名时的发件限制",
+        "content": "若未绑定独立域名,发送测试邮件必须使用注册Resend时的同一邮箱,且记得检查垃圾邮件箱.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "Tawk.to跨域报错的正确接入",
+        "content": "前端直接用fetch调用客服API会报CORS.应严格按官方文档使用 script 标签嵌入JS代码.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "Vercel线上Debug姿势",
+        "content": "本地正常但线上挂了的情况,切忌对AI抽卡许愿.正确做法是同时获取前端Console日志和后端部署日志,一起发给AI综合排查.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "GPT 手机端无法切换模型",
+        "content": "若遇到手机端无法切换模型的情况,可尝试卸载重装App.",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ]
+  },
+  "practice": [
+    {
+      "scene": "Stripe零门槛开通(无香港BRN)",
+      "method": "护照+手机号注册Wise个人号 → 开通香港账户+申请虚拟卡 → 用此开通Stripe.地址可填国内信用卡账单地址.",
+      "result": "无需肉身赴港,全流程线上完成开通海外收款通道.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "汇丰香港转账失败",
+      "method": "工行跨境支付通向汇丰香港转账常失败(红蓝狮子卡,免管理费需存1万).建议直接通过内地网银跨境电汇(Swift)操作.",
+      "result": "Swift电汇成功率高于支付通.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "低成本养号策略",
+      "method": "土区GPT + 尼区Claude组合,每月约150元.养号一个月后再升级Max版本,被风控概率降低.",
+      "result": "为后续主力账号铺路,避开新号被封的高发期.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "安卓订阅GPT/Claude",
+      "method": "办理无银联标识的Visa卡(如招行),绑定Google Play直接订阅扣款.",
+      "result": "比代充稳定,被封概率显著降低.",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ],
+  "industry": {
+    "companies": [
+      {
+        "company": "OpenAI",
+        "news": "GPT账号风控全面升级,低价代充/日抛/灰产Plus/Team/Pro被大面积封禁,存活期最短2天.100美元以上正规账号相对稳定.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "company": "Anthropic(Claude)",
+        "news": "Claude Code Max账号即便刚充100刀,若用苹果礼品卡充也极易被封.封号策略关注用户行为模式而非单纯IP.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "company": "小米",
+        "news": "推出MiMo百万亿Token创造者激励计划,含Pro/Max模型,限时免费发放一个月Plan.",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "products": [],
+    "investment": []
+  },
+  "qa": [],
+  "riskWarning": [
+    {
+      "title": "GPT低价号最短2天封号",
+      "content": "近期低价代充,日抛,灰产Plus/Team/Pro账号被大量降智,限流,封禁,存活期最短2天.建议放弃低价路线,走100美元以上正规账号或官方直充.",
+      "severity": "high",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "Claude Max + 苹果礼品卡 = 高封号",
+      "content": "刚充100刀的Claude Code Max账号若用苹果礼品卡充值,极易被封.封号后可尝试找苹果客服退款.建议用招行Visa/Google Play等更干净的支付渠道.",
+      "severity": "high",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "Stripe公司名审核陷阱",
+      "content": "注册Stripe时切忌随意填写公司名称,官方后续审核会要求提供与公司名完全一致的业务网站.瞎填后续无法过审.",
+      "severity": "medium",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ]
+}

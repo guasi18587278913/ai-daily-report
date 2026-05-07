@@ -1,0 +1,155 @@
+{
+  "title": "AI日报",
+  "date": "2026-05-01",
+  "dateRange": "2026-05-01 至 2026-05-05",
+  "dayOfWeek": "周五-周二",
+  "summary": "五一假期合集:账号风控背景下的稳定订阅方案,Claude Code/Codex协作进阶玩法,出海产品基建与首单复盘.",
+  "highlights": [
+    "Codex /goal 指令跑大型任务似乎不受5小时额度限制,跑超的暂未计入周总消耗",
+    "Resend绑域名DNS Pending卡bug:Cloudflare中Name字段要填相对值(删掉根域名后缀)",
+    "艺术生群友零基础上小程序两周做到2000元,热爱+痛点+执行力比技术背景更重要"
+  ],
+  "hotTopics": [
+    {
+      "title": "代充全线崩溃,回归官方直充",
+      "content": "多位群友反馈第三方代充或购买的成品号遭遇大规模拉闸且无售后退款.公认最稳妥方案是走官方直充:1.Google Play订阅(安卓手机或模拟器装Google框架,绑定招商等Visa/Mastercard,配免税州地址);2.Apple ID切区订阅(美区或土耳其区,土区GPT Plus约11刀,正规礼品卡充值).切忌频繁换区或用不干净的节点.",
+      "quote": "依赖各种低价代充,黑卡的时代已经结束.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "Codex /goal 隐藏福利与双模型协同",
+      "content": "Codex CLI 中使用 /goal 指令执行大型任务时,不仅支持跨轮次自动追踪,似乎不受5小时额度限制的约束,跑超的额度暂未计入周总消耗(可通过 codex features enable goals 开启).配合 codex-plugin-cc 插件,可在Claude Code终端中直接调用Codex实现同框双模型调配.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "MCP 与 Playwright 的分工边界",
+      "content": "DevTools MCP 适合让AI探索未知的网页操作流程,但极易被Cloudflare等人机验证拦截,AI一步步思考速度慢且耗Token.最佳实践:用MCP跑通流程后,让AI写一段Playwright脚本做无人值守批量处理(如抓上百个网页数据),稳定且可恢复中断.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "非技术艺术生两周变现2000元",
+      "content": "一位完全没有编程基础的艺术生群友,利用AI(Claude/Codex)成功开发了两款小程序,上线两周收入突破2000元,目前正准备铺排小红书,抖音等全域流量.",
+      "quote": "热爱+痛点+执行力比纯技术背景更重要.",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ],
+  "toolNews": {
+    "newTools": [
+      {
+        "name": "DeepSeek V4 Pro",
+        "description": "近期2.5折优惠,量大管饱,能力对标Sonnet 4.5水平,足以应付大部分日常开发调用,是御三家收紧背景下的热门平替.URL:deepseek.com",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "codex-plugin-cc",
+        "description": "OpenAI官方为Claude Code做的Codex插件,可在CC终端直接调用Codex.URL:github.com/openai/codex-plugin-cc",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "xclaw.ai",
+        "description": "AI爬虫工具推荐.URL:xclaw.ai",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "lovart.ai",
+        "description": "电商生图工具推荐.URL:lovart.ai",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "name": "Hero-sms 接码平台",
+        "description": "解决Codex桌面端KYC验证(拦截中国大陆手机号)问题.建议选0.5-0.8刀的美国节点.",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "tips": [
+      {
+        "title": "Resend DNS 验证卡 Pending",
+        "content": "在Cloudflare中添加Resend提供的DNS记录时,Name字段应填相对值(需要删掉根域名后缀),改完即秒速验证通过.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "图片别存进Supabase关系型数据库",
+        "content": "大文件存进关系库会导致容量迅速超限并被停用服务.正确架构:用Cloudflare R2或阿里云OSS存文件实体,URL链接写入Neon/Supabase.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "新手不要追大而创新",
+        "content": "教练建议新手做产品先像素级复刻:找到通过搜索词验证有刚需的现有产品,用AI完整模仿其全流程(页面+商业逻辑),建立模块化开发手感后再差异化创新.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "title": "DigitalPlat 申请免费域名+Cloudflare托管",
+        "content": "新手测试可通过DigitalPlat申请免费域名(如.org子域),托管至Cloudflare.URL:dash.domain.digitalplat.org",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ]
+  },
+  "practice": [
+    {
+      "scene": "稳定订阅GPT/Claude避免被封",
+      "method": "1.Google Play订阅:安卓手机/模拟器装Google框架,绑招商Visa/Mastercard+免税州地址;2.Apple ID切区:美区或土区(土区GPT Plus约11刀),正规礼品卡充值,不频繁换区.",
+      "result": "走官方直充安全系数最高,是当下最稳的订阅方案.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "御三家额度耗尽时的平替",
+      "method": "常规编码切到性价比更高的国产模型(如DeepSeek V4 Pro 2.5折,或小米MiMo免费Token),遇到复杂逻辑再切回原版.",
+      "result": "成本下降但生产力不掉太多,复杂任务仍能 fallback 顶配模型.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "情绪陪伴类产品上线技术栈",
+      "method": "Next.js前端 + Node.js/NestJS后端 + Vercel/Railway部署 + Neon/Supabase数据库 + CF R2存储 + Resend邮件分发.",
+      "result": "多位群友按这套栈跑通了AI情绪陪伴产品MVP.",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "scene": "Codex KYC拦截大陆手机",
+      "method": "用海外接码平台(如Hero-sms 0.5-0.8刀美国节点)解决手机号或身份证验证.",
+      "result": "桌面端Codex KYC可绕过完成验证.",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ],
+  "industry": {
+    "companies": [
+      {
+        "company": "OpenAI(Codex)",
+        "news": "桌面端Codex开始要求手机号或身份证验证,明确拦截中国大陆手机号./goal 指令支持跨轮次任务追踪且似乎不计入5小时额度.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "company": "Anthropic(Claude)",
+        "news": "20刀套餐额度收紧,几句话就能耗尽.倒逼开发者转向国产平替或DeepSeek V4 Pro.",
+        "source": { "name": "AI编程深海圈" }
+      },
+      {
+        "company": "DeepSeek",
+        "news": "V4 Pro 推出2.5折优惠,量大管饱,能力对标Sonnet 4.5,成为御三家收紧背景下的热门平替.",
+        "source": { "name": "AI编程深海圈" }
+      }
+    ],
+    "products": [],
+    "investment": []
+  },
+  "qa": [],
+  "riskWarning": [
+    {
+      "title": "代充/成品号大规模拉闸",
+      "content": "近期第三方代充或购买的成品GPT/Claude账号遭遇大规模封禁且无售后退款.务必走官方直充(Google Play或Apple Store切区).",
+      "severity": "high",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "Codex 强制KYC,拦截大陆手机号",
+      "content": "桌面端Codex近期要求手机号或身份证验证,明确拦截中国大陆手机号.需要海外接码或实体海外卡.",
+      "severity": "high",
+      "source": { "name": "AI编程深海圈" }
+    },
+    {
+      "title": "Apple ID 频繁换区/不干净节点 = 封号",
+      "content": "Apple ID切区订阅时切忌频繁换区或使用不干净的代理节点,否则极易被风控拦截或封号.",
+      "severity": "medium",
+      "source": { "name": "AI编程深海圈" }
+    }
+  ]
+}
